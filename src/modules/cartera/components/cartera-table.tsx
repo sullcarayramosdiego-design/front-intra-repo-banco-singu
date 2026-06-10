@@ -1,27 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { ActividadTransaccionalItem } from "../types";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CarteraActivaItem } from "../types";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
+import { Input } from "@/shared/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { ChevronUp, ChevronDown, Search } from "lucide-react";
 
-interface TransaccionesTableProps {
-  data: ActividadTransaccionalItem[];
+interface CarteraTableProps {
+  data: CarteraActivaItem[];
 }
 
-type SortField = "periodo" | "canal" | "cantidad_transacciones" | "monto_total";
+type SortField = "tipo_producto" | "region" | "total_cuentas" | "saldo_total";
 type SortOrder = "asc" | "desc";
 
-export function TransaccionesTable({ data }: TransaccionesTableProps) {
+export function CarteraTable({ data }: CarteraTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCanal, setSelectedCanal] = useState("all");
-  const [sortField, setSortField] = useState<SortField>("periodo");
+  const [selectedRegion, setSelectedRegion] = useState("all");
+  const [sortField, setSortField] = useState<SortField>("saldo_total");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
-  // Obtener canales únicos
-  const uniqueCanales = Array.from(new Set(data.map((item) => item.canal))).filter(Boolean);
+  // Obtener regiones únicas para el filtro
+  const uniqueRegions = Array.from(new Set(data.map((item) => item.region))).filter(Boolean);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -35,10 +35,10 @@ export function TransaccionesTable({ data }: TransaccionesTableProps) {
   // Filtrado de la data
   const filteredData = data.filter((item) => {
     const matchesSearch =
-      item.canal?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.periodo?.includes(searchTerm);
-    const matchesCanal = selectedCanal === "all" || item.canal === selectedCanal;
-    return matchesSearch && matchesCanal;
+      item.tipo_producto?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.region?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRegion = selectedRegion === "all" || item.region === selectedRegion;
+    return matchesSearch && matchesRegion;
   });
 
   // Ordenación de la data
@@ -72,7 +72,7 @@ export function TransaccionesTable({ data }: TransaccionesTableProps) {
         <div className="relative w-full md:max-w-sm">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
           <Input
-            placeholder="Buscar por periodo o canal..."
+            placeholder="Buscar por tipo de producto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-sm focus-visible:ring-1"
@@ -80,14 +80,14 @@ export function TransaccionesTable({ data }: TransaccionesTableProps) {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <Select value={selectedCanal} onValueChange={(val) => setSelectedCanal(val ?? "all")}>
+          <Select value={selectedRegion} onValueChange={(val) => setSelectedRegion(val ?? "all")}>
             <SelectTrigger className="w-full sm:w-[180px] bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-sm">
-              <SelectValue placeholder="Canal" />
+              <SelectValue placeholder="Región" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos los Canales</SelectItem>
-              {uniqueCanales.map((canal) => (
-                <SelectItem key={canal} value={canal}>{canal}</SelectItem>
+              <SelectItem value="all">Todas las Regiones</SelectItem>
+              {uniqueRegions.map((region) => (
+                <SelectItem key={region} value={region}>{region}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -99,17 +99,17 @@ export function TransaccionesTable({ data }: TransaccionesTableProps) {
         <Table>
           <TableHeader className="bg-zinc-100/50 dark:bg-zinc-800/40">
             <TableRow>
-              <TableHead onClick={() => handleSort("periodo")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300">
-                Periodo <SortIcon field="periodo" />
+              <TableHead onClick={() => handleSort("tipo_producto")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300">
+                Tipo Producto <SortIcon field="tipo_producto" />
               </TableHead>
-              <TableHead onClick={() => handleSort("canal")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300">
-                Canal de Atención <SortIcon field="canal" />
+              <TableHead onClick={() => handleSort("region")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300 text-center">
+                Región Comercial <SortIcon field="region" />
               </TableHead>
-              <TableHead onClick={() => handleSort("cantidad_transacciones")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300 text-center">
-                Cantidad Operaciones <SortIcon field="cantidad_transacciones" />
+              <TableHead onClick={() => handleSort("total_cuentas")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300 text-center">
+                Total Cuentas <SortIcon field="total_cuentas" />
               </TableHead>
-              <TableHead onClick={() => handleSort("monto_total")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300 text-right">
-                Monto Total Canalizado <SortIcon field="monto_total" />
+              <TableHead onClick={() => handleSort("saldo_total")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300 text-right">
+                Saldo Administrado <SortIcon field="saldo_total" />
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -117,17 +117,19 @@ export function TransaccionesTable({ data }: TransaccionesTableProps) {
             {sortedData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="h-24 text-center text-zinc-500">
-                  No se encontraron movimientos transaccionales.
+                  No se encontraron registros de cartera activa.
                 </TableCell>
               </TableRow>
             ) : (
               sortedData.map((item, index) => (
                 <TableRow key={index} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 border-zinc-100 dark:border-zinc-800/50">
-                  <TableCell className="font-semibold text-zinc-850 dark:text-zinc-200 font-mono">{item.periodo}</TableCell>
-                  <TableCell className="text-zinc-750 dark:text-zinc-300 font-medium">{item.canal}</TableCell>
-                  <TableCell className="text-center font-mono text-zinc-750 dark:text-zinc-300">{item.cantidad_transacciones.toLocaleString()}</TableCell>
-                  <TableCell className="text-right font-mono font-bold text-zinc-850 dark:text-zinc-100">
-                    {formatCurrency(item.monto_total)}
+                  <TableCell className="font-semibold text-zinc-850 dark:text-zinc-200">
+                    <div className="uppercase tracking-wide text-xs">{item.tipo_producto.replace(/_/g, " ")}</div>
+                  </TableCell>
+                  <TableCell className="text-center text-zinc-650 dark:text-zinc-300">{item.region}</TableCell>
+                  <TableCell className="text-center font-mono text-zinc-800 dark:text-zinc-300">{item.total_cuentas}</TableCell>
+                  <TableCell className={`text-right font-semibold font-mono ${item.saldo_total < 0 ? 'text-red-500' : 'text-zinc-900 dark:text-zinc-50'}`}>
+                    {formatCurrency(item.saldo_total)}
                   </TableCell>
                 </TableRow>
               ))

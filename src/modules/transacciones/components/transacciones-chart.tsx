@@ -2,8 +2,8 @@
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, Legend } from "recharts";
 import { ActividadTransaccionalItem } from "../types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/shared/ui/chart";
 
 interface TransaccionesChartProps {
   data: ActividadTransaccionalItem[];
@@ -12,14 +12,14 @@ interface TransaccionesChartProps {
 const areaChartConfig = {
   monto: {
     label: "Monto Total",
-    color: "#6366f1"
+    color: "var(--chart-1)"
   }
 } as const satisfies ChartConfig;
 
 const barChartConfig = {
   cantidad: {
     label: "Operaciones",
-    color: "#06b6d4"
+    color: "var(--chart-3)"
   }
 } as const satisfies ChartConfig;
 
@@ -49,7 +49,13 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
   })).sort((a, b) => b.cantidad - a.cantidad);
 
   // Colores para canales
-  const COLORS = ["#6366f1", "#06b6d4", "#10b981", "#f59e0b", "#ec4899"];
+  const COLORS = [
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
+  ];
 
   const formatCurrency = (value: number) => {
     if (value >= 1_000_000) return `S/ ${(value / 1_000_000).toFixed(1)}M`;
@@ -58,7 +64,7 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
   };
 
   const formatNumber = (value: number) => {
-    return value.toLocaleString();
+    return value.toLocaleString("es-PE");
   };
 
   return (

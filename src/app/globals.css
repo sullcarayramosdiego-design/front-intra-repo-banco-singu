@@ -46,75 +46,109 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* --- COLORES SEMÁNTICOS DE RIESGO (expuestos a Tailwind) --- */
+  --color-risk-normal: var(--risk-normal);
+  --color-risk-cpp: var(--risk-cpp);
+  --color-risk-deficiente: var(--risk-deficiente);
+  --color-risk-dudoso: var(--risk-dudoso);
+  --color-risk-perdida: var(--risk-perdida);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* --- FONDO Y TEXTO BASE --- */
+  --background: oklch(0.988 0.003 247);
+  --foreground: oklch(0.145 0.02 260);
+
+  /* --- ELEMENTOS DE UI --- */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.145 0.02 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.145 0.02 260);
+
+  /* --- PALETA CORPORATIVA (Financiera Confianza) --- */
+  /* Azul Principal #598CBB → oklch(0.574 0.108 237) */
+  --primary: oklch(0.574 0.108 237);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* Azul Oscuro Corporativo #004F8F → oklch(0.38 0.14 249) */
+  --secondary: oklch(0.38 0.14 249);
+  --secondary-foreground: oklch(0.985 0 0);
+
+  --muted: oklch(0.97 0.004 247);
+  --muted-foreground: oklch(0.556 0.02 250);
+  --accent: oklch(0.574 0.108 237);
+  --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --border: oklch(0.92 0.01 245);
+  --input: oklch(0.92 0.01 245);
+  --ring: oklch(0.574 0.108 237);
+
+  /* --- PALETA CATEGÓRICA PARA GRÁFICOS GENERALES --- */
+  --chart-1: oklch(0.574 0.108 237);  /* Azul Principal #598CBB */
+  --chart-2: oklch(0.38 0.14 249);    /* Azul Oscuro #004F8F */
+  --chart-3: oklch(0.67 0.19 210);    /* Celeste vibrante */
+  --chart-4: oklch(0.42 0.07 240);    /* Azul Pizarra */
+  --chart-5: oklch(0.88 0.02 245);    /* Gris Plata */
+
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* --- SIDEBAR (Azul Oscuro Corporativo #004F8F) --- */
+  --sidebar:                   oklch(0.38 0.14 249);   /* #004F8F — fondo principal */
+  --sidebar-foreground:        oklch(0.93 0.02 240);   /* texto blanco-azulado */
+  --sidebar-primary:           oklch(0.574 0.108 237); /* Azul Principal activo */
+  --sidebar-primary-foreground:oklch(0.985 0 0);       /* blanco */
+  --sidebar-accent:            oklch(0.44 0.13 249);   /* hover — azul más claro */
+  --sidebar-accent-foreground: oklch(0.985 0 0);       /* blanco */
+  --sidebar-border:            oklch(1 0 0 / 12%);     /* separador sutil blanco */
+  --sidebar-ring:              oklch(0.574 0.108 237); /* foco */
+
+  /* --- COLORES SEMÁNTICOS PARA EL MAPA DE RIESGO --- */
+  --risk-normal:     oklch(0.52 0.15 153);  /* Verde corporativo #15803D */
+  --risk-cpp:        oklch(0.75 0.17 74);   /* Ámbar/Naranja #F59E0B */
+  --risk-deficiente: oklch(0.64 0.22 27);   /* Rojo #EF4444 */
+  --risk-dudoso:     oklch(0.58 0.24 27);   /* Rojo oscuro #DC2626 */
+  --risk-perdida:    oklch(0.35 0.16 20);   /* Rojo muy oscuro #9f1239 */
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: oklch(0.145 0.01 255);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.205 0.01 255);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.205 0.01 255);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  --primary: oklch(0.69 0.1 237);
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.27 0.08 249);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --muted: oklch(0.269 0.01 250);
+  --muted-foreground: oklch(0.708 0.02 245);
+  --accent: oklch(0.27 0.08 249);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --ring: oklch(0.69 0.1 237);
+  --chart-1: oklch(0.69 0.1 237);
+  --chart-2: oklch(0.52 0.13 249);
+  --chart-3: oklch(0.76 0.17 210);
+  --chart-4: oklch(0.55 0.07 240);
+  --chart-5: oklch(0.38 0.03 245);
+  --sidebar:                   oklch(0.29 0.12 252);   /* azul muy oscuro modo dark */
+  --sidebar-foreground:        oklch(0.93 0.02 240);
+  --sidebar-primary:           oklch(0.69 0.1 237);
+  --sidebar-primary-foreground:oklch(0.985 0 0);
+  --sidebar-accent:            oklch(0.35 0.12 252);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-border:            oklch(1 0 0 / 10%);
+  --sidebar-ring:              oklch(0.69 0.1 237);
+
+  /* --- COLORES SEMÁNTICOS DE RIESGO (dark mode — sin cambios semánticos) --- */
+  --risk-normal:     oklch(0.62 0.15 153);
+  --risk-cpp:        oklch(0.82 0.17 74);
+  --risk-deficiente: oklch(0.7 0.22 27);
+  --risk-dudoso:     oklch(0.63 0.24 27);
+  --risk-perdida:    oklch(0.46 0.16 20);
 }
 
 @layer base {

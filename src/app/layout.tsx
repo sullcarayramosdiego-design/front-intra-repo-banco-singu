@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { SessionProvider } from "@/features/auth/components/session-provider";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { SessionProvider } from "@/modules/auth/components/session-provider";
+import { TooltipProvider } from "@/shared/ui/tooltip";
 
 const sansFont = Outfit({
   variable: "--font-sans",
@@ -27,11 +27,11 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${sansFont.variable} ${monoFont.variable} h-full antialiased dark`}
+      className={`${sansFont.variable} ${monoFont.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body
-        className="min-h-full flex flex-col bg-zinc-50 text-zinc-900 dark:bg-black dark:text-zinc-50"
+        className="min-h-full flex flex-col bg-background text-foreground"
         suppressHydrationWarning
       >
         <SessionProvider>

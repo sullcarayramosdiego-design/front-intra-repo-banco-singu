@@ -2,27 +2,27 @@
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { CarteraActivaItem } from "../types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/shared/ui/chart";
 
 interface CarteraChartsProps {
   data: CarteraActivaItem[];
 }
 
 const pieChartConfig = {
-  CREDITO_PERSONAL: { label: "Crédito Personal", color: "#6366f1" },
-  TARJETA_CREDITO: { label: "Tarjeta de Crédito", color: "#3b82f6" },
-  HIPOTECARIO: { label: "Hipotecario", color: "#10b981" },
-  CREDITO_AUTO: { label: "Crédito Auto", color: "#f59e0b" },
-  CREDITO_PYME: { label: "Crédito PYME", color: "#ec4899" },
-  CUENTA_AHORRO: { label: "Cuenta Ahorro", color: "#8b5cf6" },
-  OTROS: { label: "Otros", color: "#94a3b8" }
+  CREDITO_PERSONAL: { label: "Crédito Personal", color: "var(--chart-1)" },
+  TARJETA_CREDITO:  { label: "Tarjeta de Crédito", color: "var(--chart-2)" },
+  HIPOTECARIO:      { label: "Hipotecario", color: "var(--chart-3)" },
+  CREDITO_AUTO:     { label: "Crédito Auto", color: "var(--chart-4)" },
+  CREDITO_PYME:     { label: "Crédito PYME", color: "var(--chart-5)" },
+  CUENTA_AHORRO:    { label: "Cuenta Ahorro", color: "var(--chart-1)" },
+  OTROS:            { label: "Otros", color: "var(--chart-5)" }
 } as const satisfies ChartConfig;
 
 const barChartConfig = {
   monto: {
     label: "Saldo Administrado",
-    color: "#0284c7"
+    color: "var(--chart-1)"
   }
 } as const satisfies ChartConfig;
 
@@ -87,7 +87,7 @@ export function CarteraCharts({ data }: CarteraChartsProps) {
                     {pieData.map((entry, index) => (
                       <Cell 
                         key={`cell-${index}`} 
-                        fill={pieChartConfig[entry.keyName as keyof typeof pieChartConfig]?.color || "#94a3b8"} 
+                        fill={pieChartConfig[entry.keyName as keyof typeof pieChartConfig]?.color || "var(--chart-5)"} 
                       />
                     ))}
                   </Pie>
@@ -139,7 +139,7 @@ export function CarteraCharts({ data }: CarteraChartsProps) {
                       />
                     }
                   />
-                  <Bar dataKey="monto" fill={barChartConfig.monto.color} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="monto" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>

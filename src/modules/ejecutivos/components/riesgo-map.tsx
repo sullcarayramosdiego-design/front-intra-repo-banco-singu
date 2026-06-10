@@ -2,9 +2,9 @@
 
 import { useState, Fragment } from "react";
 import { RiesgoCrediticioItem } from "../types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Map, MapControls, MapMarker, MarkerContent, MarkerTooltip, MapClusterLayer } from "@/components/ui/map";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
+import { Map, MapControls, MapMarker, MarkerContent, MarkerTooltip, MapClusterLayer } from "@/shared/ui/map";
 import { ShieldAlert, BadgeAlert, MapPin, Activity } from "lucide-react";
 
 interface RiesgoMapProps {
@@ -14,19 +14,19 @@ interface RiesgoMapProps {
 const CLASIFICACIONES = ["NORMAL", "CPP", "DEFICIENTE", "DUDOSO", "PERDIDA"];
 
 const COLORS: Record<string, string> = {
-  NORMAL: "bg-emerald-500 text-emerald-500",
-  CPP: "bg-amber-400 text-amber-500",
-  DEFICIENTE: "bg-orange-500 text-orange-500",
-  DUDOSO: "bg-red-500 text-red-500",
-  PERDIDA: "bg-rose-950 text-rose-950",
+  NORMAL:    "bg-risk-normal text-risk-normal",
+  CPP:       "bg-risk-cpp text-risk-cpp",
+  DEFICIENTE:"bg-risk-deficiente text-risk-deficiente",
+  DUDOSO:    "bg-risk-dudoso text-risk-dudoso",
+  PERDIDA:   "bg-risk-perdida text-risk-perdida",
 };
 
 const CELL_BG: Record<string, string> = {
-  NORMAL: "bg-emerald-50/30 dark:bg-emerald-950/10 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30",
-  CPP: "bg-amber-50/30 dark:bg-amber-950/10 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-900/30",
-  DEFICIENTE: "bg-orange-50/30 dark:bg-orange-950/10 text-orange-700 dark:text-orange-400 border-orange-100 dark:border-orange-900/30",
-  DUDOSO: "bg-red-50/30 dark:bg-red-950/10 text-red-750 dark:text-red-400 border-red-100 dark:border-red-900/30",
-  PERDIDA: "bg-rose-50/30 dark:bg-rose-950/20 text-rose-800 dark:text-rose-450 border-rose-100 dark:border-rose-950/30",
+  NORMAL:    "bg-risk-normal/10 text-risk-normal border-risk-normal/20",
+  CPP:       "bg-risk-cpp/10 text-risk-cpp border-risk-cpp/20",
+  DEFICIENTE:"bg-risk-deficiente/10 text-risk-deficiente border-risk-deficiente/20",
+  DUDOSO:    "bg-risk-dudoso/10 text-risk-dudoso border-risk-dudoso/20",
+  PERDIDA:   "bg-risk-perdida/10 text-risk-perdida border-risk-perdida/20",
 };
 
 // Coordenadas de las principales regiones de Perú con agencias simuladas
@@ -99,11 +99,11 @@ const REGION_COORDS: Record<string, [number, number][]> = {
 
 // Color del marcador según clasificación dominante de la región
 const RISK_MARKER_COLOR: Record<string, string> = {
-  NORMAL: "#10b981",
-  CPP: "#f59e0b",
-  DEFICIENTE: "#f97316",
-  DUDOSO: "#ef4444",
-  PERDIDA: "#9f1239",
+  NORMAL:     "var(--risk-normal)",
+  CPP:        "var(--risk-cpp)",
+  DEFICIENTE: "var(--risk-deficiente)",
+  DUDOSO:     "var(--risk-dudoso)",
+  PERDIDA:    "var(--risk-perdida)",
 };
 
 function getRiskLevel(clasificaciones: Record<string, number>): string {
@@ -274,9 +274,9 @@ export function RiesgoMap({ data }: RiesgoMapProps) {
                   data={clusterGeoJSON}
                   clusterMaxZoom={6}
                   clusterRadius={40}
-                  clusterColors={["#10b981", "#f59e0b", "#ef4444"]}
+                  clusterColors={["var(--risk-normal)", "var(--risk-cpp)", "var(--risk-deficiente)"]}
                   clusterThresholds={[5, 10]}
-                  pointColor="#3b82f6"
+                  pointColor="var(--chart-1)"
                   onClusterClick={undefined}
                 />
 
@@ -455,16 +455,16 @@ export function RiesgoMap({ data }: RiesgoMapProps) {
                       <span className="text-[10px] text-zinc-400 font-semibold uppercase">{item.region}</span>
                     </div>
                     {/* Barra de monto relativo */}
-                    <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-1 rounded-full mt-2 overflow-hidden">
+                    <div className="w-full bg-muted h-1 rounded-full mt-2 overflow-hidden">
                       <div
-                        className="h-1 rounded-full bg-sky-500"
+                        className="h-1 rounded-full bg-primary"
                         style={{ width: `${(item.monto / maxMonto) * 100}%` }}
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/50">
                       <div>
                         <div className="text-[9px] uppercase tracking-wider text-zinc-400">Operaciones</div>
-                        <div className="text-xs font-mono font-bold text-zinc-750 dark:text-zinc-300 mt-0.5">{item.volumen.toLocaleString()} ops</div>
+                        <div className="text-xs font-mono font-bold text-zinc-750 dark:text-zinc-300 mt-0.5">{item.volumen.toLocaleString("es-PE")} ops</div>
                       </div>
                       <div>
                         <div className="text-[9px] uppercase tracking-wider text-zinc-400">Monto Total</div>

@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { getSession } from "next-auth/react";
-import { authOptions } from "@/features/auth/lib/auth-options";
+import { authOptions } from "@/modules/auth/lib/auth-options";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 

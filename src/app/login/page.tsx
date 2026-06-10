@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Button } from "@/shared/ui/button";
 import { ShieldCheck, Lock, User, AlertCircle, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {

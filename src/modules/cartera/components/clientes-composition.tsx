@@ -2,7 +2,7 @@
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend } from "recharts";
 import { ClienteComposicionItem } from "../types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Users, Building, Briefcase } from "lucide-react";
 
 interface ClientesCompositionProps {
@@ -37,31 +37,38 @@ export function ClientesComposition({ data }: ClientesCompositionProps) {
     cantidad: value,
   })).sort((a, b) => b.cantidad - a.cantidad);
 
-  const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#8b5cf6", "#ec4899", "#ef4444"];
+  const COLORS = [
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
+    "var(--chart-1)",
+  ];
 
   return (
     <div className="grid gap-6 md:grid-cols-3">
       {/* Tarjeta de Resumen 1: Personas Naturales */}
-      <Card className="bg-gradient-to-br from-white to-blue-50/50 dark:from-zinc-900 dark:to-blue-950/10 border-zinc-150 dark:border-zinc-800 shadow-sm relative overflow-hidden">
+      <Card className="bg-gradient-to-br from-card to-primary/5 border-border shadow-sm relative overflow-hidden">
         <div className="absolute right-[-10px] bottom-[-10px] opacity-[0.03] dark:opacity-[0.05]">
           <Users className="h-40 w-40" />
         </div>
         <CardHeader className="pb-2">
-          <CardTitle className="text-zinc-500 dark:text-zinc-400 text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
-            <Users className="h-4 w-4 text-blue-500" />
+          <CardTitle className="text-muted-foreground text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
+            <Users className="h-4 w-4 text-primary" />
             Personas Naturales
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold font-mono text-zinc-900 dark:text-zinc-50">
-            {naturalCount.toLocaleString()}
+            {naturalCount.toLocaleString("es-PE")}
           </div>
-          <p className="text-xs text-zinc-500 mt-1">
-            Representan el <span className="font-semibold text-blue-600 dark:text-blue-400">{naturalPercentage}%</span> del total de clientes.
+          <p className="text-xs text-muted-foreground mt-1">
+            Representan el <span className="font-semibold text-primary">{naturalPercentage}%</span> del total de clientes.
           </p>
-          <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-1.5 rounded-full mt-4 overflow-hidden">
+          <div className="w-full bg-muted h-1.5 rounded-full mt-4 overflow-hidden">
             <div
-              className="bg-blue-500 h-1.5 rounded-full transition-all duration-500"
+              className="bg-primary h-1.5 rounded-full transition-all duration-500"
               style={{ width: `${naturalPercentage}%` }}
             />
           </div>
@@ -69,26 +76,26 @@ export function ClientesComposition({ data }: ClientesCompositionProps) {
       </Card>
 
       {/* Tarjeta de Resumen 2: Personas Jurídicas */}
-      <Card className="bg-gradient-to-br from-white to-emerald-50/50 dark:from-zinc-900 dark:to-emerald-950/10 border-zinc-150 dark:border-zinc-800 shadow-sm relative overflow-hidden">
+      <Card className="bg-gradient-to-br from-card to-secondary/5 border-border shadow-sm relative overflow-hidden">
         <div className="absolute right-[-10px] bottom-[-10px] opacity-[0.03] dark:opacity-[0.05]">
           <Building className="h-40 w-40" />
         </div>
         <CardHeader className="pb-2">
-          <CardTitle className="text-zinc-500 dark:text-zinc-400 text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
-            <Building className="h-4 w-4 text-emerald-500" />
+          <CardTitle className="text-muted-foreground text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
+            <Building className="h-4 w-4 text-secondary" />
             Personas Jurídicas
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold font-mono text-zinc-900 dark:text-zinc-50">
-            {juridicaCount.toLocaleString()}
+            {juridicaCount.toLocaleString("es-PE")}
           </div>
-          <p className="text-xs text-zinc-500 mt-1">
-            Representan el <span className="font-semibold text-emerald-600 dark:text-emerald-400">{juridicaPercentage}%</span> del total de clientes.
+          <p className="text-xs text-muted-foreground mt-1">
+            Representan el <span className="font-semibold text-secondary">{juridicaPercentage}%</span> del total de clientes.
           </p>
-          <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-1.5 rounded-full mt-4 overflow-hidden">
+          <div className="w-full bg-muted h-1.5 rounded-full mt-4 overflow-hidden">
             <div
-              className="bg-emerald-500 h-1.5 rounded-full transition-all duration-500"
+              className="bg-secondary h-1.5 rounded-full transition-all duration-500"
               style={{ width: `${juridicaPercentage}%` }}
             />
           </div>
@@ -114,7 +121,7 @@ export function ClientesComposition({ data }: ClientesCompositionProps) {
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 10 }} />
                 <Tooltip
-                  formatter={(value: any) => [value.toLocaleString(), "Clientes"]}
+                  formatter={(value: any) => [value.toLocaleString("es-PE"), "Clientes"]}
                   contentStyle={{ backgroundColor: "rgba(10, 10, 10, 0.85)", borderColor: "#27272a", borderRadius: "8px", color: "#fff", fontSize: "11px" }}
                 />
                 <Bar dataKey="cantidad" radius={[0, 4, 4, 0]}>

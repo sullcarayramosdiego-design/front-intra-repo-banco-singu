@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { DesempenioEjecutivoItem } from "../types";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
+import { Input } from "@/shared/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { ChevronUp, ChevronDown, Search, Award } from "lucide-react";
 
 interface EjecutivosTableProps {
@@ -142,7 +142,7 @@ export function EjecutivosTable({ data }: EjecutivosTableProps) {
                     </TableCell>
                     <TableCell className="text-zinc-600 dark:text-zinc-400">{item.zona}</TableCell>
                     <TableCell className="text-center text-zinc-650 dark:text-zinc-300">{item.region}</TableCell>
-                    <TableCell className="text-center font-mono text-zinc-750 dark:text-zinc-300">{item.cantidad_transacciones.toLocaleString()}</TableCell>
+                    <TableCell className="text-center font-mono text-zinc-750 dark:text-zinc-300">{item.cantidad_transacciones.toLocaleString("es-PE")}</TableCell>
                     <TableCell className="text-right font-mono font-bold text-zinc-900 dark:text-zinc-50">
                       {formatCurrency(item.monto_total_transacciones)}
                     </TableCell>
