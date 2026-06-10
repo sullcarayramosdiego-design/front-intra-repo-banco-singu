@@ -311,7 +311,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </DropdownMenu>
               </SidebarMenuItem>
             </SidebarMenu>
+
+            {/* Versión */}
+            <p className="group-data-[collapsible=icon]:hidden text-center text-[10px] text-sidebar-foreground/30 pt-1 pb-0.5">
+              Version v0.1.0
+            </p>
           </SidebarFooter>
+
+
         </Sidebar>
 
         {/* Main Content Area */}
