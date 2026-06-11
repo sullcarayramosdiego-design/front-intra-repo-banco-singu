@@ -7,7 +7,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 # ─────────────────────────────────────────────
 # Stage 2: build
@@ -33,7 +33,8 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 # Desactivar telemetría de Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN npm run build
+# Cachear compilación de Next.js
+RUN --mount=type=cache,target=/app/.next/cache npm run build
 
 # ─────────────────────────────────────────────
 # Stage 3: imagen final de producción

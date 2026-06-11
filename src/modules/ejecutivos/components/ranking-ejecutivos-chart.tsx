@@ -4,6 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell, LabelList,
 } from "recharts";
+import { Award } from "lucide-react";
 import { DesempenioEjecutivoItem } from "../types";
 
 interface Props {
@@ -11,16 +12,25 @@ interface Props {
 }
 
 const COLORS = [
-  "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b",
-  "#ef4444", "#6366f1", "#ec4899", "#14b8a6",
-  "#f97316", "#a78bfa", "#34d399", "#fb923c",
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
 ];
 
-const CustomTooltip = ({ active, payload }: any) => {
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: DesempenioEjecutivoItem;
+  }>;
+}
+
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (!active || !payload?.length) return null;
-  const d = payload[0]?.payload as DesempenioEjecutivoItem;
+  const d = payload[0]?.payload;
   return (
-    <div className="bg-zinc-900/95 border border-zinc-700 rounded-xl p-3 shadow-2xl text-xs space-y-1 min-w-[200px]">
+    <div className="bg-zinc-900/95 border border-zinc-700 rounded-xl p-3 shadow-2xl text-xs space-y-1.5 min-w-[200px]">
       <p className="font-semibold text-white text-sm truncate max-w-[200px]">{d.nombre_ejecutivo}</p>
       <p className="text-zinc-400">{d.zona} · {d.region}</p>
       <div className="border-t border-zinc-700 my-1" />
@@ -30,11 +40,11 @@ const CustomTooltip = ({ active, payload }: any) => {
       </div>
       <div className="flex justify-between gap-4">
         <span className="text-zinc-400">Monto Total</span>
-        <span className="text-cyan-300 font-bold">${(d.monto_total / 1000).toFixed(0)}K</span>
+        <span className="text-cyan-300 font-bold">S/ {(d.monto_total / 1000).toFixed(0)}K</span>
       </div>
       <div className="flex justify-between gap-4">
         <span className="text-zinc-400">Ticket Prom.</span>
-        <span className="text-emerald-300 font-bold">${d.ticket_promedio.toFixed(0)}</span>
+        <span className="text-emerald-300 font-bold">S/ {d.ticket_promedio.toFixed(0)}</span>
       </div>
     </div>
   );
@@ -50,10 +60,11 @@ export function RankingEjecutivosChart({ data }: Props) {
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-700/60 bg-white dark:bg-zinc-900/80 p-5 space-y-3">
       <div>
-        <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-base">
-          🏆 Top Ejecutivos por Transacciones
+        <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-base flex items-center gap-2">
+          <Award className="h-4 w-4 text-violet-500" />
+          Top Ejecutivos por Transacciones
         </h3>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">Top 15 por volumen de operaciones</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Top 15 por volumen de operaciones</p>
       </div>
 
       <ResponsiveContainer width="100%" height={340}>
@@ -77,7 +88,7 @@ export function RankingEjecutivosChart({ data }: Props) {
               dataKey="cantidad_transacciones"
               position="right"
               style={{ fontSize: 10, fill: "#9ca3af" }}
-              formatter={(v: any) => Number(v).toLocaleString()}
+              formatter={(v: unknown) => Number(v).toLocaleString()}
             />
           </Bar>
         </BarChart>

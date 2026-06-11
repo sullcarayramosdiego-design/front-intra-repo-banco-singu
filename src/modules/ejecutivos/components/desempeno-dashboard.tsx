@@ -13,7 +13,7 @@ import { CanalDonutChart } from "./canal-donut-chart";
 import { EvolucionMensualChart } from "./evolucion-mensual-chart";
 import { ZonaBarChart } from "./zona-bar-chart";
 import { DesempenoFiltersBar } from "./desempeno-filters-bar";
-import { Loader2 } from "lucide-react";
+import { HashScrollHandler } from "@/shared/components/hash-scroll-handler";
 
 interface ServerData {
   ranking: DesempenioEjecutivoItem[];
@@ -39,11 +39,9 @@ const EMPTY_KPIS: DesempenioKpis = {
 
 export function DesempenioDashboard({ initialData }: Props) {
   const [filters, setFilters] = useState<DesempenioFilters>({});
-  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<ServerData>(initialData);
 
   const fetchAll = useCallback(async (f: DesempenioFilters) => {
-    setLoading(true);
     try {
       const [ranking, kpis, porZona, evolucion, canales] = await Promise.all([
         EjecutivosService.getDesempenioEjecutivos(f).catch(() => []),
@@ -53,49 +51,50 @@ export function DesempenioDashboard({ initialData }: Props) {
         EjecutivosService.getCanales(f).catch(() => []),
       ]);
       setData((prev) => ({ ...prev, ranking, kpis, porZona, evolucion, canales }));
-    } finally {
-      setLoading(false);
+    } catch {
+      // Silently catch api failures
     }
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAll(filters);
   }, [filters, fetchAll]);
 
   return (
-    <div className="space-y-5">
-      {/* Filtros */}
-      <DesempenoFiltersBar
-        catalogos={data.catalogos}
-        filters={filters}
-        onChange={setFilters}
-      />
+    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-4rem-2rem)] -m-3 md:-m-4">
+      <HashScrollHandler />
 
-      {/* Loader overlay sutil */}
-      {loading && (
-        <div className="flex items-center justify-center gap-2 text-zinc-400 text-sm py-2">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span>Actualizando datos…</span>
+      {/* Sidebar de Filtros */}
+      <aside className="w-full lg:w-80 border-b lg:border-b-0 lg:border-l border-border/50 bg-zinc-50/30 dark:bg-zinc-900/10 p-6 shrink-0 lg:order-last">
+        <DesempenoFiltersBar
+          catalogos={data.catalogos}
+          filters={filters}
+          onChange={setFilters}
+        />
+      </aside>
+
+      {/* Contenido Principal */}
+      <div className="flex-1 p-4 md:p-6 space-y-6 min-w-0">
+
+        {/* KPIs */}
+        <DesempenoKpis kpis={data.kpis} />
+
+        {/* Fila 1: Ranking + Canal */}
+        <div id="ranking-desempeno" className="grid grid-cols-1 xl:grid-cols-5 gap-6 scroll-mt-4">
+          <div className="xl:col-span-3">
+            <RankingEjecutivosChart data={data.ranking} />
+          </div>
+          <div className="xl:col-span-2">
+            <CanalDonutChart data={data.canales} />
+          </div>
         </div>
-      )}
 
-      {/* KPIs */}
-      <DesempenoKpis kpis={data.kpis} />
-
-      {/* Fila 1: Ranking + Canal */}
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
-        <div className="xl:col-span-3">
-          <RankingEjecutivosChart data={data.ranking} />
+        {/* Fila 2: Evolución + Zona */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <EvolucionMensualChart data={data.evolucion} />
+          <ZonaBarChart data={data.porZona} />
         </div>
-        <div className="xl:col-span-2">
-          <CanalDonutChart data={data.canales} />
-        </div>
-      </div>
-
-      {/* Fila 2: Evolución + Zona */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <EvolucionMensualChart data={data.evolucion} />
-        <ZonaBarChart data={data.porZona} />
       </div>
     </div>
   );

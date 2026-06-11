@@ -34,30 +34,8 @@ export default async function DesempenoPage() {
     ]);
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-4rem-2rem)] -m-3 md:-m-4">
-      <div className="flex-1 p-4 md:p-6 space-y-6 min-w-0">
-        {/* Header */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600">
-              <Award className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-                Desempeño de Ejecutivos
-              </h1>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Transacciones gestionadas por ejecutivo, zona y región
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Dashboard interactivo (Client Component) */}
-        <DesempenioDashboard
-          initialData={{ ranking, kpis, porZona, evolucion, canales, catalogos }}
-        />
-      </div>
-    </div>
+    <DesempenioDashboard
+      initialData={{ ranking, kpis, porZona, evolucion, canales, catalogos }}
+    />
   );
 }
