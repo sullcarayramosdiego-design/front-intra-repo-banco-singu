@@ -2,40 +2,49 @@ import { NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+const keycloakId = process.env.KEYCLOAK_ID?.trim();
+const keycloakSecret = process.env.KEYCLOAK_SECRET?.trim();
+const keycloakIssuer = process.env.KEYCLOAK_ISSUER?.trim();
+const hasKeycloakConfig = Boolean(keycloakId && keycloakSecret && keycloakIssuer);
+
 export const authOptions: NextAuthOptions = {
   providers: [
     // ── Keycloak SSO (OAuth / OIDC) ──────────────────────────────
-    KeycloakProvider({
-      clientId:     process.env.KEYCLOAK_ID     || "",
-      clientSecret: process.env.KEYCLOAK_SECRET || "",
-      issuer:       process.env.KEYCLOAK_ISSUER || "",
-    }),
+    ...(hasKeycloakConfig
+      ? [
+          KeycloakProvider({
+            clientId: keycloakId!,
+            clientSecret: keycloakSecret!,
+            issuer: keycloakIssuer!,
+          }),
+        ]
+      : []),
 
     // ── Formulario usuario/contraseña → valida contra Keycloak ───
     CredentialsProvider({
-      id:   "credentials",
+      id: "credentials",
       name: "Banco Singular",
       credentials: {
-        username: { label: "Usuario",    type: "text"     },
+        username: { label: "Usuario", type: "text" },
         password: { label: "Contraseña", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null;
+        if (!keycloakIssuer || !keycloakId || !keycloakSecret) return null;
 
-        const issuer = process.env.KEYCLOAK_ISSUER || "";
-        const tokenUrl = `${issuer}/protocol/openid-connect/token`;
+        const tokenUrl = `${keycloakIssuer}/protocol/openid-connect/token`;
 
         try {
           const res = await fetch(tokenUrl, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({
-              grant_type:    "password",
-              client_id:     process.env.KEYCLOAK_ID     || "",
-              client_secret: process.env.KEYCLOAK_SECRET || "",
-              username:      credentials.username,
-              password:      credentials.password,
-              scope:         "openid profile email",
+              grant_type: "password",
+              client_id: keycloakId,
+              client_secret: keycloakSecret,
+              username: credentials.username,
+              password: credentials.password,
+              scope: "openid profile email",
             }),
           });
 
@@ -50,10 +59,10 @@ export const authOptions: NextAuthOptions = {
           );
 
           return {
-            id:          payload.sub,
-            name:        payload.name || payload.preferred_username,
-            email:       payload.email || "",
-            roles:       payload.realm_access?.roles ?? [],
+            id: payload.sub,
+            name: payload.name || payload.preferred_username,
+            email: payload.email || "",
+            roles: payload.realm_access?.roles ?? [],
             accessToken: tokens.access_token,
           };
         } catch {
@@ -71,8 +80,8 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
-        token.id          = user.id;
-        token.roles       = (user as any).roles ?? [];
+        token.id = user.id;
+        token.roles = (user as any).roles ?? [];
         token.accessToken = (user as any).accessToken;
       }
       // Keycloak SSO: usa el access_token del proveedor OIDC
@@ -85,7 +94,7 @@ export const authOptions: NextAuthOptions = {
       if (token) {
         session.user = {
           ...session.user,
-          id:    token.id    as string,
+          id: token.id as string,
           roles: token.roles as string[],
         } as any;
         (session as any).accessToken = token.accessToken;
