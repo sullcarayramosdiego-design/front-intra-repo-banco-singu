@@ -14,13 +14,13 @@ export function ClientesComposition({ data }: ClientesCompositionProps) {
   const totalClientes = data.reduce((acc, curr) => acc + curr.cantidad_clientes, 0);
   
   const personaMap = data.reduce((acc, curr) => {
-    const key = curr.tipo_persona || "OTROS";
+    const key = curr.tipo_persona?.toUpperCase() || "OTROS";
     acc[key] = (acc[key] || 0) + curr.cantidad_clientes;
     return acc;
   }, {} as Record<string, number>);
 
-  const naturalCount = personaMap["NATURAL"] || 0;
-  const juridicaCount = personaMap["JURIDICA"] || 0;
+  const naturalCount = (personaMap["NATURAL"] || 0) + (personaMap["FISICA"] || 0) + (personaMap["FÍSICA"] || 0);
+  const juridicaCount = (personaMap["JURIDICA"] || 0) + (personaMap["JURÍDICA"] || 0) + (personaMap["MORAL"] || 0);
 
   const naturalPercentage = totalClientes > 0 ? ((naturalCount / totalClientes) * 100).toFixed(1) : "0";
   const juridicaPercentage = totalClientes > 0 ? ((juridicaCount / totalClientes) * 100).toFixed(1) : "0";
