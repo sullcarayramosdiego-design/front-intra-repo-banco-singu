@@ -39,7 +39,7 @@ export class EjecutivosService {
 
   /** Transacciones agrupadas por zona */
   static async getPorZona(
-    filters: Pick<DesempenioFilters, "canal" | "region"> = {}
+    filters: DesempenioFilters = {}
   ): Promise<DesempenioZona[]> {
     return fetcher<DesempenioZona[]>(
       `/api/reportes/desempeno/por-zona${buildQuery(filters)}`
@@ -57,7 +57,7 @@ export class EjecutivosService {
 
   /** Distribución por canal */
   static async getCanales(
-    filters: Pick<DesempenioFilters, "zona" | "region"> = {}
+    filters: DesempenioFilters = {}
   ): Promise<DesempenioCanal[]> {
     return fetcher<DesempenioCanal[]>(
       `/api/reportes/desempeno/canales${buildQuery(filters)}`

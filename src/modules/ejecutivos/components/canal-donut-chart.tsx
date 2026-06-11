@@ -8,6 +8,8 @@ import { DesempenioCanal } from "../types";
 
 interface Props {
   data: DesempenioCanal[];
+  activeCanal?: string;
+  onSelectCanal?: (canal: string) => void;
 }
 
 const COLORS = [
@@ -62,7 +64,7 @@ const CustomLabel = ({ cx = 0, cy = 0, midAngle = 0, innerRadius = 0, outerRadiu
   );
 };
 
-export function CanalDonutChart({ data }: Props) {
+export function CanalDonutChart({ data, activeCanal, onSelectCanal }: Props) {
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-700/60 bg-white dark:bg-zinc-900/80 p-5 space-y-3">
       <div>
@@ -88,12 +90,28 @@ export function CanalDonutChart({ data }: Props) {
             strokeWidth={2}
             stroke="transparent"
           >
-            {data.map((_, i) => (
-              <Cell key={i} fill={COLORS[i % COLORS.length]} />
-            ))}
+            {data.map((entry, i) => {
+              const isActive = activeCanal === entry.canal;
+              const isAnyActive = activeCanal !== undefined;
+              return (
+                <Cell
+                  key={i}
+                  fill={COLORS[i % COLORS.length]}
+                  opacity={isAnyActive && !isActive ? 0.35 : 1}
+                  className="cursor-pointer"
+                  onClick={() => onSelectCanal?.(entry.canal)}
+                />
+              );
+            })}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
           <Legend
+            onClick={(e: any) => {
+              if (e && e.payload && e.payload.value) {
+                onSelectCanal?.(e.payload.value);
+              }
+            }}
+            wrapperStyle={{ cursor: "pointer" }}
             formatter={(value) => (
               <span className="text-xs text-zinc-400">{value}</span>
             )}

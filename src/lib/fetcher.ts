@@ -31,7 +31,11 @@ export async function fetcher<T>(endpoint: string, options: RequestInit = {}): P
     headers.set("Content-Type", "application/json");
   }
 
-  const url = endpoint.startsWith("http") ? endpoint : `${API_BASE_URL}${endpoint}`;
+  const base = typeof window !== "undefined"
+    ? (process.env.NEXT_PUBLIC_API_URL || "")
+    : API_BASE_URL;
+
+  const url = endpoint.startsWith("http") ? endpoint : `${base}${endpoint}`;
 
   console.log(`[Fetcher] Requesting URL: ${url}`, {
     method: options.method || "GET",

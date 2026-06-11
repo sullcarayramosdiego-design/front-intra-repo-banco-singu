@@ -3,12 +3,16 @@
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend,
+  Cell,
 } from "recharts";
 import { Map } from "lucide-react";
 import { DesempenioZona } from "../types";
 
 interface Props {
   data: DesempenioZona[];
+  activeZona?: string;
+  activeRegion?: string;
+  onSelectZonaRegion?: (zona: string, region: string) => void;
 }
 
 interface CustomTooltipProps {
@@ -44,7 +48,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   );
 };
 
-export function ZonaBarChart({ data }: Props) {
+export function ZonaBarChart({ data, activeZona, activeRegion, onSelectZonaRegion }: Props) {
   // Separar zona y región en label
   const chartData = data.map((d) => ({
     ...d,
@@ -65,7 +69,7 @@ export function ZonaBarChart({ data }: Props) {
       </div>
 
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={chartData} margin={{ left: 0, right: 8, top: 4, bottom: 48 }}>
+        <BarChart data={chartData} margin={{ left: 0, right: 8, top: 20, bottom: 10 }}>
           <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.12} vertical={false} />
           <XAxis
             dataKey="label"
@@ -75,6 +79,7 @@ export function ZonaBarChart({ data }: Props) {
             angle={-35}
             textAnchor="end"
             interval={0}
+            height={70}
           />
           <YAxis
             yAxisId="left"
@@ -93,6 +98,9 @@ export function ZonaBarChart({ data }: Props) {
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
           <Legend
+            verticalAlign="top"
+            align="right"
+            wrapperStyle={{ paddingBottom: 12 }}
             formatter={(value) => (
               <span className="text-xs text-zinc-400">{value}</span>
             )}
@@ -104,7 +112,21 @@ export function ZonaBarChart({ data }: Props) {
             fill="var(--chart-1)"
             radius={[4, 4, 0, 0]}
             maxBarSize={40}
-          />
+            className="cursor-pointer"
+          >
+            {chartData.map((entry, i) => {
+              const isActive = activeZona === entry.zona && activeRegion === entry.region;
+              const isAnyActive = activeZona !== undefined || activeRegion !== undefined;
+              return (
+                <Cell
+                  key={i}
+                  fill="var(--chart-1)"
+                  opacity={isAnyActive && !isActive ? 0.35 : 1}
+                  onClick={() => onSelectZonaRegion?.(entry.zona, entry.region)}
+                />
+              );
+            })}
+          </Bar>
           <Bar
             yAxisId="right"
             dataKey="monto_millones"
@@ -112,7 +134,21 @@ export function ZonaBarChart({ data }: Props) {
             fill="var(--chart-2)"
             radius={[4, 4, 0, 0]}
             maxBarSize={40}
-          />
+            className="cursor-pointer"
+          >
+            {chartData.map((entry, i) => {
+              const isActive = activeZona === entry.zona && activeRegion === entry.region;
+              const isAnyActive = activeZona !== undefined || activeRegion !== undefined;
+              return (
+                <Cell
+                  key={i}
+                  fill="var(--chart-2)"
+                  opacity={isAnyActive && !isActive ? 0.35 : 1}
+                  onClick={() => onSelectZonaRegion?.(entry.zona, entry.region)}
+                />
+              );
+            })}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>

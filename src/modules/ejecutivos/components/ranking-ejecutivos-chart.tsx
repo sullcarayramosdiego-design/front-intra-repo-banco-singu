@@ -9,6 +9,8 @@ import { DesempenioEjecutivoItem } from "../types";
 
 interface Props {
   data: DesempenioEjecutivoItem[];
+  activeEjecutivoId?: string;
+  onSelectEjecutivo?: (id: number) => void;
 }
 
 const COLORS = [
@@ -50,7 +52,7 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   );
 };
 
-export function RankingEjecutivosChart({ data }: Props) {
+export function RankingEjecutivosChart({ data, activeEjecutivoId, onSelectEjecutivo }: Props) {
   const top = data.slice(0, 15);
   const chartData = top.map((d) => ({
     ...d,
@@ -80,10 +82,19 @@ export function RankingEjecutivosChart({ data }: Props) {
             axisLine={false}
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
-          <Bar dataKey="cantidad_transacciones" radius={[0, 4, 4, 0]} maxBarSize={18}>
-            {chartData.map((_, i) => (
-              <Cell key={i} fill={COLORS[i % COLORS.length]} />
-            ))}
+          <Bar dataKey="cantidad_transacciones" radius={[0, 4, 4, 0]} maxBarSize={18} className="cursor-pointer">
+            {chartData.map((entry, i) => {
+              const isActive = activeEjecutivoId === String(entry.ejecutivo_id);
+              const isAnyActive = activeEjecutivoId !== undefined;
+              return (
+                <Cell
+                  key={i}
+                  fill={COLORS[i % COLORS.length]}
+                  opacity={isAnyActive && !isActive ? 0.35 : 1}
+                  onClick={() => onSelectEjecutivo?.(entry.ejecutivo_id)}
+                />
+              );
+            })}
             <LabelList
               dataKey="cantidad_transacciones"
               position="right"

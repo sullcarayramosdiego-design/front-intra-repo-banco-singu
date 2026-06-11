@@ -80,6 +80,32 @@ export function DesempenioDashboard({ initialData }: Props) {
   }, []);
 
 
+  const handleSelectFilter = useCallback((key: keyof DesempenioFilters, value: string) => {
+    setFilters((prev) => {
+      const newFilters = { ...prev };
+      if (newFilters[key] === value) {
+        delete newFilters[key];
+      } else {
+        newFilters[key] = value;
+      }
+      return newFilters;
+    });
+  }, []);
+
+  const handleSelectZonaRegion = useCallback((zona: string, region: string) => {
+    setFilters((prev) => {
+      const newFilters = { ...prev };
+      if (newFilters.zona === zona && newFilters.region === region) {
+        delete newFilters.zona;
+        delete newFilters.region;
+      } else {
+        newFilters.zona = zona;
+        newFilters.region = region;
+      }
+      return newFilters;
+    });
+  }, []);
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAll(filters);
@@ -107,17 +133,34 @@ export function DesempenioDashboard({ initialData }: Props) {
         {/* Fila 1: Ranking + Canal */}
         <div id="ranking-desempeno" className="grid grid-cols-1 xl:grid-cols-5 gap-6 scroll-mt-4">
           <div className="xl:col-span-3">
-            <RankingEjecutivosChart data={data.ranking} />
+            <RankingEjecutivosChart
+              data={data.ranking}
+              activeEjecutivoId={filters.ejecutivo_id}
+              onSelectEjecutivo={(id) => handleSelectFilter("ejecutivo_id", String(id))}
+            />
           </div>
           <div className="xl:col-span-2">
-            <CanalDonutChart data={data.canales} />
+            <CanalDonutChart
+              data={data.canales}
+              activeCanal={filters.canal}
+              onSelectCanal={(canal) => handleSelectFilter("canal", canal)}
+            />
           </div>
         </div>
 
         {/* Fila 2: Evolución + Zona */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <EvolucionMensualChart data={data.evolucion} />
-          <ZonaBarChart data={data.porZona} />
+          <EvolucionMensualChart
+            data={data.evolucion}
+            activeZona={filters.zona}
+            onSelectZona={(zona) => handleSelectFilter("zona", zona)}
+          />
+          <ZonaBarChart
+            data={data.porZona}
+            activeZona={filters.zona}
+            activeRegion={filters.region}
+            onSelectZonaRegion={handleSelectZonaRegion}
+          />
         </div>
       </div>
     </div>

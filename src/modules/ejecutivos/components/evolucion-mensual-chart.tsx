@@ -9,6 +9,8 @@ import { DesempenioEvolucion } from "../types";
 
 interface Props {
   data: DesempenioEvolucion[];
+  activeZona?: string;
+  onSelectZona?: (zona: string) => void;
 }
 
 // Agrupar por periodo, pivot por zona
@@ -63,7 +65,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   );
 };
 
-export function EvolucionMensualChart({ data }: Props) {
+export function EvolucionMensualChart({ data, activeZona, onSelectZona }: Props) {
   const { zonas, rows } = pivotData(data);
 
   return (
@@ -95,21 +97,34 @@ export function EvolucionMensualChart({ data }: Props) {
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend
+            onClick={(e: any) => {
+              if (e && e.dataKey) {
+                onSelectZona?.(String(e.dataKey));
+              }
+            }}
+            wrapperStyle={{ cursor: "pointer" }}
             formatter={(value) => (
               <span className="text-xs text-zinc-400">{value}</span>
             )}
           />
-          {zonas.map((zona, i) => (
-            <Line
-              key={zona}
-              type="monotone"
-              dataKey={zona}
-              stroke={ZONE_COLORS[i % ZONE_COLORS.length]}
-              strokeWidth={2.5}
-              dot={{ r: 3, strokeWidth: 0 }}
-              activeDot={{ r: 5 }}
-            />
-          ))}
+          {zonas.map((zona, i) => {
+            const isActive = activeZona === zona;
+            const isAnyActive = activeZona !== undefined;
+            return (
+              <Line
+                key={zona}
+                type="monotone"
+                dataKey={zona}
+                stroke={ZONE_COLORS[i % ZONE_COLORS.length]}
+                strokeWidth={2.5}
+                dot={{ r: 3, strokeWidth: 0 }}
+                activeDot={{ r: 5 }}
+                className="cursor-pointer"
+                onClick={() => onSelectZona?.(zona)}
+                opacity={isAnyActive && !isActive ? 0.25 : 1}
+              />
+            );
+          })}
         </LineChart>
       </ResponsiveContainer>
     </div>

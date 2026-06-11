@@ -8,7 +8,6 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
   Landmark,
-  ChevronRight,
   ChevronsUpDown,
   User,
   Shield,
@@ -29,9 +28,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
   SidebarInset,
   SidebarTrigger,
   SidebarMenuSkeleton,
@@ -55,24 +51,6 @@ function DashboardSidebarContent() {
   // El módulo activo es el cuya href coincide con el inicio del pathname
   const activeKey = SIDEBAR_MODULES.find((m) => pathname.startsWith(m.href))?.key ?? SIDEBAR_MODULES[0].key;
 
-  const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>(() =>
-    Object.fromEntries(SIDEBAR_MODULES.map((m) => [m.key, m.key === activeKey]))
-  );
-
-  const toggleMenu = (key: string) => {
-    setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const handleParentClick = (key: string, href: string) => {
-    toggleMenu(key);
-    router.push(href);
-  };
-
-  // Sync open state when pathname changes (navegación externa)
-  useEffect(() => {
-    setOpenMenus((prev) => ({ ...prev, [activeKey]: true }));
-  }, [activeKey]);
-
   return (
     <SidebarContent>
       <SidebarGroup>
@@ -84,43 +62,17 @@ function DashboardSidebarContent() {
             {SIDEBAR_MODULES.map((mod) => {
               const Icon = mod.icon;
               const isActive = activeKey === mod.key;
-              const isOpen = openMenus[mod.key];
 
               return (
                 <SidebarMenuItem key={mod.key}>
                   <SidebarMenuButton
                     isActive={isActive}
-                    onClick={() => handleParentClick(mod.key, mod.href)}
+                    onClick={() => router.push(mod.href)}
                     className="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-lg cursor-pointer"
                   >
                     <Icon className="h-4 w-4 shrink-0" />
                     <span className="group-data-[collapsible=icon]:hidden">{mod.label}</span>
-                    <ChevronRight
-                      className={cn(
-                        "ml-auto h-3 w-3 group-data-[collapsible=icon]:hidden opacity-60 transition-transform duration-200",
-                        isOpen && "rotate-90"
-                      )}
-                    />
                   </SidebarMenuButton>
-
-                  {isOpen && (
-                    <SidebarMenuSub className="group-data-[collapsible=icon]:hidden">
-                      {mod.children.map((child) => (
-                        <SidebarMenuSubItem key={child.label}>
-                          <SidebarMenuSubButton
-                            render={
-                              <Link
-                                href={child.hash ? `${child.href}#${child.hash}` : child.href}
-                              />
-                            }
-                            className="text-xs text-sidebar-foreground/70 hover:text-sidebar-foreground"
-                          >
-                            <span>{child.label}</span>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  )}
                 </SidebarMenuItem>
               );
             })}
