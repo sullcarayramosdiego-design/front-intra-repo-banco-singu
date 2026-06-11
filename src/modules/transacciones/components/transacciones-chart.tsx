@@ -79,21 +79,21 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
       acc[period] = { periodo: period };
     }
     
-    acc[period][type] = (acc[period][type] || 0) + Number(curr.cantidad_transacciones || 0);
+    acc[period][type] = (Number(acc[period][type]) || 0) + Number(curr.cantidad_transacciones || 0);
     return acc;
-  }, {} as Record<string, any>);
+  }, {} as Record<string, Record<string, number | string>>);
 
   const moveTypes = Array.from(moveTypesSet).sort();
-  const compositionChartData = Object.values(periodMapWithTypes).sort((a: any, b: any) => a.periodo.localeCompare(b.periodo));
+  const compositionChartData = Object.values(periodMapWithTypes).sort((a, b) => String(a.periodo).localeCompare(String(b.periodo)));
 
   const TYPE_COLORS: Record<string, string> = {
-    DEPOSITO: "#10b981",       // Green
-    RETIRO: "#ef4444",         // Red
-    PAGO: "#3b82f6",           // Blue
-    TRANSFERENCIA: "#8b5cf6",  // Violet
-    CARGO: "#f59e0b",          // Amber
-    COMISION: "#06b6d4",       // Cyan
-    OTROS: "#6b7280",          // Gray
+    DEPOSITO: "var(--risk-normal)",       // Verde semántico
+    RETIRO: "var(--risk-deficiente)",    // Rojo semántico
+    PAGO: "var(--chart-1)",              // Azul Principal
+    TRANSFERENCIA: "var(--chart-3)",     // Celeste vibrante
+    CARGO: "var(--risk-cpp)",            // Ámbar
+    COMISION: "var(--chart-4)",          // Azul pizarra
+    OTROS: "var(--chart-5)",             // Gris Plata
   };
 
   // 2. Agrupar Cantidad por Canal
@@ -125,15 +125,15 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
 
   // Colores para los canales (harmónicos)
   const COLORS = [
-    "#3b82f6", // blue-500
-    "#10b981", // emerald-500
-    "#8b5cf6", // violet-500
-    "#f59e0b", // amber-500
-    "#06b6d4", // cyan-500
-    "#ef4444", // red-500
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
+    "var(--chart-1)", // fallback
   ];
 
-  const formatCurrency = (value: any) => {
+  const formatCurrency = (value: unknown) => {
     const num = Number(value);
     if (isNaN(num)) return "";
     if (num >= 1_000_000) return `S/ ${(num / 1_000_000).toFixed(1)}M`;
@@ -141,7 +141,7 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
     return `S/ ${num}`;
   };
 
-  const formatDetailedCurrency = (value: any) => {
+  const formatDetailedCurrency = (value: unknown) => {
     const num = Number(value);
     if (isNaN(num)) return "";
     return new Intl.NumberFormat("es-PE", {
@@ -151,7 +151,7 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
     }).format(num);
   };
 
-  const formatNumber = (value: any) => {
+  const formatNumber = (value: unknown) => {
     const num = Number(value);
     return isNaN(num) ? "" : num.toLocaleString("es-PE");
   };
@@ -179,9 +179,10 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
                     data={trendData} 
                     margin={{ top: 15, right: 10, left: 10, bottom: 0 }}
                     className="cursor-pointer"
-                    onClick={(e: any) => {
-                      if (e && e.activeLabel) {
-                        handleFilter('periodo', e.activeLabel);
+                    onClick={(e: unknown) => {
+                      const ev = e as { activeLabel?: string };
+                      if (ev && ev.activeLabel) {
+                        handleFilter('periodo', ev.activeLabel);
                       }
                     }}
                   >
@@ -252,7 +253,7 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
                     <XAxis dataKey="periodo" tick={{ fontSize: 11 }} />
                     <YAxis tickFormatter={formatNumber} tick={{ fontSize: 11 }} />
                     <Tooltip
-                      formatter={(value: any, name: any) => [formatNumber(Number(value)), name]}
+                      formatter={(value: unknown, name: unknown) => [formatNumber(Number(value)), String(name)]}
                       contentStyle={{
                         backgroundColor: "var(--popover)",
                         borderColor: "var(--border)",
@@ -273,8 +274,9 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
                           fill={TYPE_COLORS[type] || COLORS[index % COLORS.length]}
                           radius={isLast ? [4, 4, 0, 0] as [number, number, number, number] : [0, 0, 0, 0] as [number, number, number, number]}
                           className="cursor-pointer hover:opacity-85 transition-opacity"
-                          onClick={(entryData: any) => {
-                            if (entryData && entryData.periodo) handleFilter('periodo', entryData.periodo);
+                          onClick={(entryData: unknown) => {
+                            const ed = entryData as { periodo?: string };
+                            if (ed && ed.periodo) handleFilter('periodo', ed.periodo);
                           }}
                         >
                           {compositionChartData.map((entry, dataIndex) => {
@@ -326,7 +328,7 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
                         paddingAngle={3}
                         dataKey="value"
                         nameKey="name"
-                        label={(entry: any) => `${(Number(entry.percent) * 100).toFixed(0)}%`}
+                        label={(entry: unknown) => `${(Number((entry as { percent: number }).percent) * 100).toFixed(0)}%`}
                       >
                         {canalData.map((entry, index) => {
                           const isActive = activeCanal === entry.name;
@@ -343,7 +345,7 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
                         })}
                       </Pie>
                       <ChartTooltip
-                        formatter={(value: any) => [formatNumber(Number(value)), "Operaciones"]}
+                        formatter={(value: unknown) => [formatNumber(Number(value)), "Operaciones"]}
                         contentStyle={{
                           backgroundColor: "var(--popover)",
                           borderColor: "var(--border)",
@@ -419,8 +421,9 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
                       dataKey="monto" 
                       radius={[0, 4, 4, 0]}
                       className="cursor-pointer hover:opacity-85 transition-opacity"
-                      onClick={(data: any) => {
-                        if (data && data.name) handleFilter('canal', data.name);
+                      onClick={(data: unknown) => {
+                        const d = data as { name?: string };
+                        if (d && d.name) handleFilter('canal', d.name);
                       }}
                     >
                       <LabelList 

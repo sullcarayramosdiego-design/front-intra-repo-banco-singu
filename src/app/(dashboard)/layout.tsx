@@ -139,8 +139,10 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { data: session } = useSession();
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
     if (savedTheme) {
       setTheme(savedTheme);
@@ -337,14 +339,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <div className="flex items-center gap-3">
               <div className="text-xs text-zinc-450 dark:text-zinc-500 font-medium hidden sm:block">
-                Corte Actual: {new Date().toLocaleDateString("es-PE")}
+                Corte Actual: {mounted ? new Date().toLocaleDateString("es-PE") : ""}
               </div>
             </div>
           </header>
 
           {/* Content Area */}
           <main className="flex-grow overflow-y-auto p-3 md:p-4">
-            {children}
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[50vh]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            }>
+              {children}
+            </Suspense>
           </main>
         </SidebarInset>
       </div>

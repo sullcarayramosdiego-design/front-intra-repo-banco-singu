@@ -11,13 +11,13 @@ interface EjecutivosTableProps {
   data: DesempenioEjecutivoItem[];
 }
 
-type SortField = "nombre_ejecutivo" | "zona" | "region" | "cantidad_transacciones" | "monto_total_transacciones";
+type SortField = "nombre_ejecutivo" | "zona" | "region" | "cantidad_transacciones" | "monto_total";
 type SortOrder = "asc" | "desc";
 
 export function EjecutivosTable({ data }: EjecutivosTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("all");
-  const [sortField, setSortField] = useState<SortField>("monto_total_transacciones");
+  const [sortField, setSortField] = useState<SortField>("monto_total");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const uniqueRegions = Array.from(new Set(data.map((item) => item.region))).filter(Boolean);
@@ -111,8 +111,8 @@ export function EjecutivosTable({ data }: EjecutivosTableProps) {
               <TableHead onClick={() => handleSort("cantidad_transacciones")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300 text-center">
                 Operaciones <SortIcon field="cantidad_transacciones" />
               </TableHead>
-              <TableHead onClick={() => handleSort("monto_total_transacciones")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300 text-right">
-                Monto Transaccionado <SortIcon field="monto_total_transacciones" />
+              <TableHead onClick={() => handleSort("monto_total")} className="cursor-pointer font-bold select-none text-zinc-700 dark:text-zinc-300 text-right">
+                Monto Transaccionado <SortIcon field="monto_total" />
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -125,7 +125,7 @@ export function EjecutivosTable({ data }: EjecutivosTableProps) {
               </TableRow>
             ) : (
               sortedData.map((item, index) => {
-                const isTop1 = index === 0 && sortField === "monto_total_transacciones" && sortOrder === "desc";
+                const isTop1 = index === 0 && sortField === "monto_total" && sortOrder === "desc";
                 return (
                   <TableRow key={item.ejecutivo_id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 border-zinc-100 dark:border-zinc-800/50">
                     <TableCell className="text-center font-bold text-zinc-500">
@@ -144,7 +144,7 @@ export function EjecutivosTable({ data }: EjecutivosTableProps) {
                     <TableCell className="text-center text-zinc-650 dark:text-zinc-300">{item.region}</TableCell>
                     <TableCell className="text-center font-mono text-zinc-750 dark:text-zinc-300">{item.cantidad_transacciones.toLocaleString("es-PE")}</TableCell>
                     <TableCell className="text-right font-mono font-bold text-zinc-900 dark:text-zinc-50">
-                      {formatCurrency(item.monto_total_transacciones)}
+                      {formatCurrency(item.monto_total)}
                     </TableCell>
                   </TableRow>
                 );

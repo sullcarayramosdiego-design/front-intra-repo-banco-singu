@@ -1,13 +1,18 @@
 import { TransaccionesService } from "@/modules/transacciones/services/transacciones.service";
 import { HashScrollHandler } from "@/shared/components/hash-scroll-handler";
+import { ActividadTransaccionalItem } from "@/modules/transacciones/types";
 
 import { TransaccionesChart } from "@/modules/transacciones/components/transacciones-chart";
 import { TransaccionesFilters } from "@/modules/transacciones/components/transacciones-filters";
 import { TransaccionesKpis } from "@/modules/transacciones/components/transacciones-kpis";
 
-export const revalidate = 30;
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
-export default async function TransaccionesPage(props: any) {
+export const unstable_instant = false;
+
+export default async function TransaccionesPage(props: PageProps) {
   // Await searchParams for Next.js 15+ compatibility
   const searchParams = await props.searchParams;
   const periodoParams = searchParams?.periodo as string | undefined;
@@ -24,16 +29,16 @@ export default async function TransaccionesPage(props: any) {
   const response = await TransaccionesService.getActividadTransaccional(queryParts).catch(() => null);
 
   const isArray = Array.isArray(response);
-  const transaccionesData = isArray 
-    ? (response as any) 
+  const transaccionesData: ActividadTransaccionalItem[] = isArray 
+    ? (response as unknown as ActividadTransaccionalItem[]) 
     : (response?.items || []);
     
   const uniqueCanales = isArray 
-    ? Array.from(new Set((response as any).map((item: any) => item.canal).filter(Boolean))).sort() as string[]
+    ? Array.from(new Set((response as unknown as ActividadTransaccionalItem[]).map((item) => item.canal).filter(Boolean))).sort() as string[]
     : (response?.canales || []);
 
   const uniquePeriodos = isArray
-    ? Array.from(new Set((response as any).map((item: any) => item.periodo).filter(Boolean))).sort((a: any, b: any) => b.localeCompare(a)) as string[]
+    ? Array.from(new Set((response as unknown as ActividadTransaccionalItem[]).map((item) => item.periodo).filter(Boolean))).sort((a, b) => b.localeCompare(a)) as string[]
     : (response?.periodos || []);
 
   const uniqueSucursales = isArray ? [] : (response?.sucursales || []);
@@ -42,13 +47,13 @@ export default async function TransaccionesPage(props: any) {
   // Filtrado local en el Server Component
   let filteredData = transaccionesData;
   if (periodoParams) {
-    filteredData = filteredData.filter((item: any) => item.periodo === periodoParams);
+    filteredData = filteredData.filter((item) => item.periodo === periodoParams);
   }
   if (canalParams) {
-    filteredData = filteredData.filter((item: any) => item.canal === canalParams);
+    filteredData = filteredData.filter((item) => item.canal === canalParams);
   }
   if (tipoParams) {
-    filteredData = filteredData.filter((item: any) => item.tipo_movimiento === tipoParams);
+    filteredData = filteredData.filter((item) => item.tipo_movimiento === tipoParams);
   }
 
   return (

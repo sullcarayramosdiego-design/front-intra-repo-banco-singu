@@ -3,9 +3,13 @@ import { HashScrollHandler } from "@/shared/components/hash-scroll-handler";
 import { RiesgoMap } from "@/modules/riesgos/components/riesgo-map";
 import { RiesgosFilters } from "@/modules/riesgos/components/riesgos-filters";
 
-export const revalidate = 30;
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
-export default async function RiesgosPage(props: any) {
+export const unstable_instant = false;
+
+export default async function RiesgosPage(props: PageProps) {
   const searchParams = await props.searchParams;
   const regionParams = searchParams?.region as string | undefined;
 

@@ -6,6 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Map } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+interface ChartDataItem {
+  region: string;
+  total: number;
+  [key: string]: string | number;
+}
+
 interface CarteraAdvancedChartsProps {
   data: CarteraActivaItem[];
 }
@@ -44,21 +50,22 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
     }
     
     // Sumar saldo_total (podría haber múltiples registros para la misma combinación si la query lo permite)
-    acc[region][product] = (acc[region][product] || 0) + Math.abs(curr.saldo_total);
+    acc[region][product] = (Number(acc[region][product]) || 0) + Math.abs(curr.saldo_total);
     
     return acc;
-  }, {} as Record<string, any>);
+  }, {} as Record<string, Record<string, number | string>>);
 
   const products = Array.from(productsSet);
-  const chartData = Object.values(groupedByRegion).map((item: any) => {
-    const total = products.reduce((sum, product) => sum + (item[product] || 0), 0);
+  const chartData = Object.values(groupedByRegion).map((item): ChartDataItem => {
+    const total = products.reduce((sum, product) => sum + (Number(item[product]) || 0), 0);
     return {
       ...item,
+      region: String(item.region),
       total,
     };
   });
 
-  const formatShortCurrency = (value: any) => {
+  const formatShortCurrency = (value: unknown) => {
     const num = Number(value);
     if (isNaN(num)) return "";
     if (num >= 1_000_000) return `S/ ${(num / 1_000_000).toFixed(1)}M`;
@@ -67,12 +74,12 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
   };
 
   const COLORS = [
-    "#3b82f6", // blue-500
-    "#10b981", // emerald-500
-    "#f59e0b", // amber-500
-    "#ef4444", // red-500
-    "#8b5cf6", // violet-500
-    "#06b6d4", // cyan-500
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
+    "var(--chart-1)", // cycle
   ];
 
   const formatCurrency = (value: number) =>
@@ -115,7 +122,7 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
                   tick={{ fontSize: 12 }} 
                 />
                 <Tooltip 
-                  formatter={(value: any, name: any) => [formatCurrency(Number(value)), name]}
+                  formatter={(value: unknown, name: unknown) => [formatCurrency(Number(value)), String(name)]}
                   contentStyle={{
                     backgroundColor: "var(--popover)",
                     borderColor: "var(--border)",
@@ -146,10 +153,11 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
                       fill={COLORS[index % COLORS.length]}
                       radius={index === products.length - 1 ? [4, 4, 0, 0] as [number, number, number, number] : [0, 0, 0, 0] as [number, number, number, number]} 
                       className="cursor-pointer hover:opacity-80 transition-opacity"
-                      onClick={(data: any) => {
-                        if (data && data.region) {
+                      onClick={(data: unknown) => {
+                        const d = data as { region?: string };
+                        if (d && d.region) {
                           // Al hacer clic filtramos por la región de esa barra
-                          handleFilter('region', data.region);
+                          handleFilter('region', d.region);
                         }
                       }}
                     >

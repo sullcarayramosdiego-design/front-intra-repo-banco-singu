@@ -19,9 +19,13 @@ interface ResumenDashboard {
   total_transacciones: number;
 }
 
-export const revalidate = 30;
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
-export default async function CarteraPage(props: any) {
+export const unstable_instant = false;
+
+export default async function CarteraPage(props: PageProps) {
   // Await searchParams for Next.js 15+ compatibility
   const searchParams = await props.searchParams;
   const regionParams = searchParams?.region as string | undefined;
