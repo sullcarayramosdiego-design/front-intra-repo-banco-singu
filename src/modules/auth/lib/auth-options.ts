@@ -34,10 +34,28 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Contraseña", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.username || !credentials?.password) return null;
-        if (!keycloakIssuer || !keycloakId || !keycloakSecret) return null;
+        console.log("[Auth-Options] Starting authorize callback");
+        
+        if (!credentials?.username || !credentials?.password) {
+          console.warn("[Auth-Options] Missing username or password in credentials");
+          return null;
+        }
+        
+        console.log("[Auth-Options] Environment checks:", {
+          hasIssuer: !!keycloakIssuer,
+          hasClientId: !!keycloakId,
+          hasSecret: !!keycloakSecret,
+          issuer: keycloakIssuer,
+          clientId: keycloakId
+        });
+
+        if (!keycloakIssuer || !keycloakId || !keycloakSecret) {
+          console.error("[Auth-Options] Missing Keycloak configuration environment variables");
+          return null;
+        }
 
         const tokenUrl = `${keycloakIssuer}/protocol/openid-connect/token`;
+        console.log("[Auth-Options] Sending token request to:", tokenUrl);
 
         try {
           const res = await fetch(tokenUrl, {
@@ -53,15 +71,24 @@ export const authOptions: NextAuthOptions = {
             }),
           });
 
-          if (!res.ok) return null;
+          console.log("[Auth-Options] Keycloak token response status:", res.status);
+
+          if (!res.ok) {
+            const errorText = await res.text();
+            console.error("[Auth-Options] Keycloak login failed. Status:", res.status, "Body:", errorText);
+            return null;
+          }
 
           const tokens = await res.json();
+          console.log("[Auth-Options] Token successfully received from Keycloak");
 
           // Decodificar el access_token para extraer claims del usuario
           const payloadB64 = tokens.access_token.split(".")[1];
           const payload = JSON.parse(
             Buffer.from(payloadB64, "base64url").toString("utf-8")
           );
+
+          console.log("[Auth-Options] User token decoded successfully. Subject:", payload.sub);
 
           return {
             id: payload.sub,
@@ -70,7 +97,8 @@ export const authOptions: NextAuthOptions = {
             roles: payload.realm_access?.roles ?? [],
             accessToken: tokens.access_token,
           };
-        } catch {
+        } catch (error: any) {
+          console.error("[Auth-Options] Exception caught during Keycloak authorization:", error?.message || error, error?.stack);
           return null;
         }
       },
