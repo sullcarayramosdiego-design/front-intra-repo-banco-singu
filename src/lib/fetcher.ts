@@ -2,6 +2,10 @@ import { getServerSession } from "next-auth";
 import { getSession } from "next-auth/react";
 import { authOptions } from "@/modules/auth/lib/auth-options";
 
+if (process.env.NEXT_PUBLIC_API_URL === "") {
+  delete process.env.NEXT_PUBLIC_API_URL;
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export async function fetcher<T>(endpoint: string, options: RequestInit = {}): Promise<T> {

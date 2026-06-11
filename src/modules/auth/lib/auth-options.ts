@@ -2,6 +2,11 @@ import { NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+// Safeguard for build time: delete empty string environment variables so libraries can fallback safely
+if (process.env.NEXTAUTH_URL === "") delete process.env.NEXTAUTH_URL;
+if (process.env.NEXT_PUBLIC_API_URL === "") delete process.env.NEXT_PUBLIC_API_URL;
+if (process.env.KEYCLOAK_ISSUER === "") delete process.env.KEYCLOAK_ISSUER;
+
 const keycloakId = process.env.KEYCLOAK_ID?.trim();
 const keycloakSecret = process.env.KEYCLOAK_SECRET?.trim();
 const keycloakIssuer = process.env.KEYCLOAK_ISSUER?.trim();
