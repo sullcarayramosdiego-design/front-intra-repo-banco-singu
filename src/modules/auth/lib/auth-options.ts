@@ -18,12 +18,12 @@ export const authOptions: NextAuthOptions = {
     // ── Keycloak SSO (OAuth / OIDC) ──────────────────────────────
     ...(hasKeycloakConfig
       ? [
-          KeycloakProvider({
-            clientId: keycloakId!,
-            clientSecret: keycloakSecret!,
-            issuer: keycloakIssuer!,
-          }),
-        ]
+        KeycloakProvider({
+          clientId: keycloakId!,
+          clientSecret: keycloakSecret!,
+          issuer: keycloakIssuer!,
+        }),
+      ]
       : []),
 
     // ── Formulario usuario/contraseña → valida contra Keycloak o API Mock ───
@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         console.log("[Auth-Options] Starting authorize callback");
-        
+
         if (!credentials?.username || !credentials?.password) {
           console.warn("[Auth-Options] Missing username or password in credentials");
           return null;

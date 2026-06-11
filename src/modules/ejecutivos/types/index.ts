@@ -52,6 +52,7 @@ export interface DesempenioCatalogos {
   zonas: string[];
   regiones: string[];
   canales: string[];
+  ejecutivos: { id: number; nombre: string }[];
 }
 
 export interface DesempenioFilters {
@@ -59,4 +60,5 @@ export interface DesempenioFilters {
   region?: string;
   canal?: string;
   top?: string;
+  ejecutivo_id?: string;
 }

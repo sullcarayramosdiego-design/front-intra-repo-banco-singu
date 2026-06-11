@@ -11,10 +11,11 @@ import {
 
 function buildQuery(filters: DesempenioFilters = {}): string {
   const params = new URLSearchParams();
-  if (filters.zona)   params.set("zona", filters.zona);
-  if (filters.region) params.set("region", filters.region);
-  if (filters.canal)  params.set("canal", filters.canal);
-  if (filters.top)    params.set("top", filters.top);
+  if (filters.zona)         params.set("zona", filters.zona);
+  if (filters.region)       params.set("region", filters.region);
+  if (filters.canal)        params.set("canal", filters.canal);
+  if (filters.top)          params.set("top", filters.top);
+  if (filters.ejecutivo_id) params.set("ejecutivo_id", filters.ejecutivo_id);
   const qs = params.toString();
   return qs ? `?${qs}` : "";
 }

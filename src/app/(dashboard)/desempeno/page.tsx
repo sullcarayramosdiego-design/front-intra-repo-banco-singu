@@ -30,6 +30,7 @@ export default async function DesempenoPage() {
         zonas: [],
         regiones: [],
         canales: [],
+        ejecutivos: [],
       })),
     ]);
 
