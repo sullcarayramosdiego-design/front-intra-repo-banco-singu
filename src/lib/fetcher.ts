@@ -33,32 +33,48 @@ export async function fetcher<T>(endpoint: string, options: RequestInit = {}): P
 
   const url = endpoint.startsWith("http") ? endpoint : `${API_BASE_URL}${endpoint}`;
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-    next: { revalidate: 30 }, // Cachear por 30 segundos por defecto en el servidor
+  console.log(`[Fetcher] Requesting URL: ${url}`, {
+    method: options.method || "GET",
+    hasToken: !!token,
+    tokenType: token ? typeof token : "none",
   });
 
-  if (!response.ok) {
-    let errorMessage = `Error de API (${response.status})`;
-    try {
-      const errorData = await response.json();
-      errorMessage = errorData.message || errorMessage;
-    } catch {
-      // no JSON
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+      next: { revalidate: 30 }, // Cachear por 30 segundos por defecto en el servidor
+    });
+
+    console.log(`[Fetcher] Response from URL: ${url} status: ${response.status}`);
+
+    if (!response.ok) {
+      let errorMessage = `Error de API (${response.status})`;
+      let errorBody = "";
+      try {
+        errorBody = await response.text();
+        const errorData = JSON.parse(errorBody);
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        errorMessage = errorBody || errorMessage;
+      }
+      console.error(`[Fetcher Error] Status: ${response.status}, Message: ${errorMessage}`);
+      throw new Error(errorMessage);
     }
-    throw new Error(errorMessage);
-  }
 
-  if (response.status === 204) {
-    return null as any;
-  }
+    if (response.status === 204) {
+      return null as any;
+    }
 
-  const responseData = await response.json();
-  if (responseData && typeof responseData === "object" && "status" in responseData && responseData.status === "success" && "data" in responseData) {
-    return responseData.data as T;
-  }
+    const responseData = await response.json();
+    if (responseData && typeof responseData === "object" && "status" in responseData && responseData.status === "success" && "data" in responseData) {
+      return responseData.data as T;
+    }
 
-  return responseData as T;
+    return responseData as T;
+  } catch (error: any) {
+    console.error(`[Fetcher Exception] URL: ${url}, Error:`, error?.message || error, error?.stack);
+    throw error;
+  }
 }
 export default fetcher;
