@@ -44,17 +44,41 @@ export function DesempenioDashboard({ initialData }: Props) {
   const fetchAll = useCallback(async (f: DesempenioFilters) => {
     try {
       const [ranking, kpis, porZona, evolucion, canales] = await Promise.all([
-        EjecutivosService.getDesempenioEjecutivos(f).catch(() => []),
-        EjecutivosService.getKpis(f).catch(() => EMPTY_KPIS),
-        EjecutivosService.getPorZona(f).catch(() => []),
-        EjecutivosService.getEvolucion(f).catch(() => []),
-        EjecutivosService.getCanales(f).catch(() => []),
+        EjecutivosService.getDesempenioEjecutivos(f).catch((err) => {
+          console.warn("[Dashboard] Error fetching ranking:", err);
+          return null;
+        }),
+        EjecutivosService.getKpis(f).catch((err) => {
+          console.warn("[Dashboard] Error fetching kpis:", err);
+          return null;
+        }),
+        EjecutivosService.getPorZona(f).catch((err) => {
+          console.warn("[Dashboard] Error fetching porZona:", err);
+          return null;
+        }),
+        EjecutivosService.getEvolucion(f).catch((err) => {
+          console.warn("[Dashboard] Error fetching evolucion:", err);
+          return null;
+        }),
+        EjecutivosService.getCanales(f).catch((err) => {
+          console.warn("[Dashboard] Error fetching canales:", err);
+          return null;
+        }),
       ]);
-      setData((prev) => ({ ...prev, ranking, kpis, porZona, evolucion, canales }));
-    } catch {
-      // Silently catch api failures
+
+      setData((prev) => ({
+        ...prev,
+        ranking: ranking !== null ? ranking : prev.ranking,
+        kpis: kpis !== null ? kpis : prev.kpis,
+        porZona: porZona !== null ? porZona : prev.porZona,
+        evolucion: evolucion !== null ? evolucion : prev.evolucion,
+        canales: canales !== null ? canales : prev.canales,
+      }));
+    } catch (error) {
+      console.error("[Dashboard] Unexpected error in fetchAll:", error);
     }
   }, []);
+
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
