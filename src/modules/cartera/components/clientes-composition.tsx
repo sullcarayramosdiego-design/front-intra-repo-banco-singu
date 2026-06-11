@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend, PieChart, Pie, LabelList } from "recharts";
 import { ClienteComposicionItem } from "../types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Users, Building, Briefcase } from "lucide-react";
@@ -64,58 +64,76 @@ export function ClientesComposition({ data }: ClientesCompositionProps) {
 
   const activeSegmento = searchParams.get('segmento');
 
-  return (
-    <div className="grid gap-6 md:grid-cols-3">
-      {/* Tarjeta de Resumen 1: Personas Naturales */}
-      <Card className="bg-gradient-to-br from-card to-primary/5 border-border shadow-sm relative overflow-hidden">
-        <div className="absolute right-[-10px] bottom-[-10px] opacity-[0.03] dark:opacity-[0.05]">
-          <Users className="h-40 w-40" />
-        </div>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-muted-foreground text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" />
-            Personas Naturales
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-3xl font-bold font-mono text-zinc-900 dark:text-zinc-50">
-            {naturalCount.toLocaleString("es-PE")}
-          </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Representan el <span className="font-semibold text-primary">{naturalPercentage}%</span> del total de clientes.
-          </p>
-          <div className="w-full bg-muted h-1.5 rounded-full mt-4 overflow-hidden">
-            <div
-              className="bg-primary h-1.5 rounded-full transition-all duration-500"
-              style={{ width: `${naturalPercentage}%` }}
-            />
-          </div>
-        </CardContent>
-      </Card>
+  const pieDataClientes = [
+    { name: "Persona Natural", value: naturalCount, percentage: naturalPercentage, fill: "var(--chart-1)" },
+    { name: "Persona Jurídica", value: juridicaCount, percentage: juridicaPercentage, fill: "var(--chart-2)" },
+  ];
 
-      {/* Tarjeta de Resumen 2: Personas Jurídicas */}
-      <Card className="bg-gradient-to-br from-card to-secondary/5 border-border shadow-sm relative overflow-hidden">
-        <div className="absolute right-[-10px] bottom-[-10px] opacity-[0.03] dark:opacity-[0.05]">
-          <Building className="h-40 w-40" />
-        </div>
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      {/* Gráfico 1: Tipo de Personería */}
+      <Card className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border-zinc-150 dark:border-zinc-800 md:col-span-1">
         <CardHeader className="pb-2">
-          <CardTitle className="text-muted-foreground text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
-            <Building className="h-4 w-4 text-secondary" />
-            Personas Jurídicas
+          <CardTitle className="text-zinc-850 dark:text-zinc-100 flex items-center gap-2 text-base font-bold">
+            <Users className="h-4 w-4 text-zinc-500" />
+            Distribución por Tipo de Persona
           </CardTitle>
+          <CardDescription>Proporción de clientes registrados por personería</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="text-3xl font-bold font-mono text-zinc-900 dark:text-zinc-50">
-            {juridicaCount.toLocaleString("es-PE")}
+        <CardContent className="h-[180px] flex items-center justify-between">
+          <div className="h-full w-[50%]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieDataClientes}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={40}
+                  outerRadius={60}
+                  paddingAngle={3}
+                  dataKey="value"
+                  label={(entry: any) => `${(Number(entry.percent) * 100).toFixed(1)}%`}
+                >
+                  {pieDataClientes.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value: any) => [value.toLocaleString("es-PE"), "Clientes"]}
+                  contentStyle={{
+                    backgroundColor: "var(--popover)",
+                    borderColor: "var(--border)",
+                    borderRadius: "var(--radius)",
+                    fontSize: "11px",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                  }}
+                  labelStyle={{ color: "var(--foreground)", fontWeight: "bold" }}
+                  itemStyle={{ color: "var(--foreground)" }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Representan el <span className="font-semibold text-secondary">{juridicaPercentage}%</span> del total de clientes.
-          </p>
-          <div className="w-full bg-muted h-1.5 rounded-full mt-4 overflow-hidden">
-            <div
-              className="bg-secondary h-1.5 rounded-full transition-all duration-500"
-              style={{ width: `${juridicaPercentage}%` }}
-            />
+          
+          {/* Leyenda Detallada */}
+          <div className="flex flex-col gap-3 w-[50%] text-xs justify-center pl-4 border-l border-zinc-100 dark:border-zinc-800/60">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5 font-semibold text-zinc-800 dark:text-zinc-200">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                Personas Naturales
+              </div>
+              <div className="text-zinc-500 font-mono text-[11px] pl-3.5 mt-0.5">
+                {naturalCount.toLocaleString("es-PE")} ({naturalPercentage}%)
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5 font-semibold text-zinc-800 dark:text-zinc-200">
+                <span className="h-2 w-2 rounded-full bg-secondary" />
+                Personas Jurídicas
+              </div>
+              <div className="text-zinc-500 font-mono text-[11px] pl-3.5 mt-0.5">
+                {juridicaCount.toLocaleString("es-PE")} ({juridicaPercentage}%)
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -127,20 +145,28 @@ export function ClientesComposition({ data }: ClientesCompositionProps) {
             <Briefcase className="h-4 w-4 text-zinc-500" />
             Segmentación de Clientes
           </CardTitle>
-          <CardDescription>Clientes por segmento comercial (Clic para filtrar)</CardDescription>
+          <CardDescription>Clientes por segmento comercial</CardDescription>
         </CardHeader>
         <CardContent className="h-[180px]">
           {barData.length === 0 ? (
             <div className="flex h-full items-center justify-center text-zinc-500">No hay datos</div>
           ) : (
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+              <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 35, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 10 }} />
                 <Tooltip
                   formatter={(value: any) => [value.toLocaleString("es-PE"), "Clientes"]}
-                  contentStyle={{ backgroundColor: "rgba(10, 10, 10, 0.85)", borderColor: "#27272a", borderRadius: "8px", color: "#fff", fontSize: "11px" }}
+                  contentStyle={{
+                    backgroundColor: "var(--popover)",
+                    borderColor: "var(--border)",
+                    borderRadius: "var(--radius)",
+                    fontSize: "11px",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                  }}
+                  labelStyle={{ color: "var(--foreground)", fontWeight: "bold" }}
+                  itemStyle={{ color: "var(--foreground)" }}
                 />
                 <Bar 
                   dataKey="cantidad" 
@@ -150,6 +176,13 @@ export function ClientesComposition({ data }: ClientesCompositionProps) {
                     if (data && data.name) handleFilter('segmento', data.name);
                   }}
                 >
+                  <LabelList 
+                    dataKey="cantidad" 
+                    position="right" 
+                    formatter={(val: any) => Number(val).toLocaleString("es-PE")}
+                    style={{ fontSize: '9px', fontWeight: 'semibold', fill: 'var(--foreground)' }}
+                    offset={8}
+                  />
                   {barData.map((entry, index) => {
                     const isActive = activeSegmento === entry.name;
                     const isFaded = activeSegmento && !isActive;

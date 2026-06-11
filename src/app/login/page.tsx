@@ -5,13 +5,14 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { LoadingScreen } from "@/shared/ui/loading-screen";
 
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError]       = useState("");
   const [loading, setLoading]   = useState(false);
   const [redirecting, setRedirecting] = useState(false);
@@ -61,27 +62,14 @@ export default function LoginPage() {
 
       {/* Card minimalista */}
       <div
-        className="relative z-10 w-full max-w-sm px-8 py-10 flex flex-col gap-8"
-        style={{
-          background: "oklch(0.38 0.14 249 / 0.78)",
-          backdropFilter: "blur(24px)",
-          border: "1px solid oklch(0.574 0.108 237 / 0.25)",
-          borderRadius: "1rem",
-        }}
+        className="relative z-10 w-full max-w-sm px-8 py-10 flex flex-col gap-8 bg-secondary/78 backdrop-blur-[24px] border border-primary/25 rounded-2xl"
       >
         {/* Header */}
         <div className="flex flex-col items-center gap-1 text-center">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center mb-3"
-            style={{
-              background: "oklch(0.574 0.108 237 / 0.15)",
-              border: "1px solid oklch(0.574 0.108 237 / 0.3)",
-            }}
+            className="w-10 h-10 rounded-full flex items-center justify-center mb-3 bg-primary/15 border border-primary/30"
           >
-            <span
-              className="text-sm font-bold tracking-tight"
-              style={{ color: "oklch(0.574 0.108 237)" }}
-            >
+            <span className="text-sm font-bold tracking-tight text-primary">
               FC
             </span>
           </div>
@@ -126,25 +114,39 @@ export default function LoginPage() {
             >
               Contraseña
             </label>
-            <Input
-              id="login-password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-              autoComplete="current-password"
-              className="h-10 bg-transparent text-white text-sm placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none px-0 border-0 border-b border-b-white/20 hover:border-b-white/40 transition-colors"
-              required
-            />
+            <div className="relative flex items-center">
+              <Input
+                id="login-password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                autoComplete="current-password"
+                className="h-10 w-full bg-transparent text-white text-sm placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none pl-0 pr-8 border-0 border-b border-b-white/20 hover:border-b-white/40 transition-colors"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors focus:outline-none"
+                tabIndex={-1}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <Button
             id="login-submit"
             type="submit"
             disabled={loading}
-            className="h-10 w-full text-sm font-medium tracking-wide text-white rounded-lg transition-opacity disabled:opacity-50 mt-1"
-            style={{ background: "oklch(0.574 0.108 237)" }}
+            className="h-10 w-full text-sm font-medium tracking-wide text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-all disabled:opacity-50 mt-1"
           >
             {loading ? "Verificando..." : "Iniciar sesión"}
           </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, Legend } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, Legend, LabelList } from "recharts";
 import { ActividadTransaccionalItem } from "../types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/shared/ui/chart";
@@ -82,8 +82,9 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
     return `S/ ${value}`;
   };
 
-  const formatNumber = (value: number) => {
-    return value.toLocaleString("es-PE");
+  const formatNumber = (value: any) => {
+    const num = Number(value);
+    return isNaN(num) ? "" : num.toLocaleString("es-PE");
   };
 
   return (
@@ -179,6 +180,13 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
                       if (data && data.name) handleFilter('canal', data.name);
                     }}
                   >
+                    <LabelList 
+                      dataKey="cantidad" 
+                      position="top" 
+                      formatter={formatNumber}
+                      style={{ fontSize: '10px', fontWeight: 'semibold', fill: 'var(--foreground)' }}
+                      offset={8}
+                    />
                     {canalData.map((entry, index) => {
                       const isActive = activeCanal === entry.name;
                       const isFaded = activeCanal && !isActive;

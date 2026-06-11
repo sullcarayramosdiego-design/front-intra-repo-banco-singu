@@ -14,6 +14,8 @@ interface ResumenDashboard {
   total_clientes: number;
   total_cuentas_activas: number;
   cartera_total_saldo: number;
+  cartera_positivo_saldo: number;
+  cartera_negativo_saldo: number;
   total_transacciones: number;
 }
 
@@ -26,15 +28,25 @@ export default async function CarteraPage(props: any) {
   const segmentoParams = searchParams?.segmento as string | undefined;
   const productoParams = searchParams?.producto as string | undefined;
 
-  const [resumenOriginal, carteraData, clientesData] = await Promise.all([
-    fetcher<ResumenDashboard>("/api/reportes/resumen").catch(() => ({
+  const queryParts: Record<string, string> = {};
+  if (regionParams) queryParts.region = regionParams;
+  if (segmentoParams) queryParts.segmento = segmentoParams;
+  if (productoParams) queryParts.producto = productoParams;
+
+  const queryString = new URLSearchParams(queryParts).toString();
+  const resumenUrl = queryString ? `/api/reportes/resumen?${queryString}` : "/api/reportes/resumen";
+
+  const [resumen, carteraData, clientesData] = await Promise.all([
+    fetcher<ResumenDashboard>(resumenUrl).catch(() => ({
       total_clientes: 0,
       total_cuentas_activas: 0,
       cartera_total_saldo: 0,
+      cartera_positivo_saldo: 0,
+      cartera_negativo_saldo: 0,
       total_transacciones: 0,
     })),
-    CarteraService.getCarteraActiva().catch(() => []),
-    CarteraService.getComposicionClientes().catch(() => []),
+    CarteraService.getCarteraActiva(queryParts).catch(() => []),
+    CarteraService.getComposicionClientes(queryParts).catch(() => []),
   ]);
 
   // Aplicar filtros locales (Client-Side filtering en el Server Component)
@@ -51,16 +63,6 @@ export default async function CarteraPage(props: any) {
     filteredClientes = filteredClientes.filter((item) => item.segmento === segmentoParams);
   }
 
-  // Recalcular KPIs si hay filtros
-  const cartera_total_saldo = filteredCartera.reduce((acc, curr) => acc + Math.abs(curr.saldo_total), 0);
-  const total_clientes = filteredClientes.reduce((acc, curr) => acc + (curr.cantidad_clientes || 0), 0);
-  
-  const resumen = {
-    ...resumenOriginal,
-    cartera_total_saldo: (regionParams || productoParams) ? cartera_total_saldo : resumenOriginal.cartera_total_saldo,
-    total_clientes: segmentoParams ? total_clientes : resumenOriginal.total_clientes,
-  };
-
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("es-PE", {
       style: "currency",
@@ -69,16 +71,16 @@ export default async function CarteraPage(props: any) {
     }).format(value);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full px-4 md:px-6">
+    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-4rem-2rem)] -m-3 md:-m-4">
       <HashScrollHandler />
 
       {/* Sidebar de Filtros */}
-      <div className="lg:col-span-1 lg:order-last">
+      <aside className="w-full lg:w-80 border-b lg:border-b-0 lg:border-l border-border/50 bg-zinc-50/30 dark:bg-zinc-900/10 p-6 shrink-0 lg:order-last">
         <CarteraFilters />
-      </div>
+      </aside>
 
       {/* Contenido Principal */}
-      <div className="lg:col-span-3 space-y-6">
+      <div className="flex-1 p-4 md:p-6 space-y-6 min-w-0">
         {/* KPIs */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <Card className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border-zinc-150 dark:border-zinc-800 shadow-sm transition-all hover:scale-[1.01]">
@@ -92,7 +94,12 @@ export default async function CarteraPage(props: any) {
               <div className="text-2xl font-black font-mono text-zinc-850 dark:text-zinc-100">
                 {formatCurrency(resumen.cartera_total_saldo)}
               </div>
-              <p className="text-[10px] text-zinc-400 mt-0.5">Saldo absoluto consolidado</p>
+              <div className="flex gap-1.5 items-center text-[10px] text-zinc-400 mt-1 font-mono">
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">(+) {formatCurrency(resumen.cartera_positivo_saldo)}</span>
+                <span className="text-zinc-300 dark:text-zinc-700">|</span>
+                <span className="text-rose-600 dark:text-rose-400 font-semibold">(-) {formatCurrency(resumen.cartera_negativo_saldo)}</span>
+              </div>
+              <p className="text-[10px] text-zinc-400 mt-1.5">Saldo absoluto consolidado</p>
             </CardContent>
           </Card>
 
@@ -146,10 +153,8 @@ export default async function CarteraPage(props: any) {
         <div id="composicion-clientes" className="scroll-mt-4">
           <ClientesComposition data={filteredClientes} />
         </div>
-        <div id="analisis-cartera" className="scroll-mt-4">
+        <div id="analisis-cartera" className="grid gap-6 lg:grid-cols-2 scroll-mt-4">
           <CarteraCharts data={filteredCartera} />
-        </div>
-        <div id="detalle-cartera" className="space-y-2 scroll-mt-4">
           <CarteraAdvancedCharts data={filteredCartera} />
         </div>
       </div>

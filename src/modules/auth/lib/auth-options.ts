@@ -10,7 +10,8 @@ if (process.env.KEYCLOAK_ISSUER === "") delete process.env.KEYCLOAK_ISSUER;
 const keycloakId = process.env.KEYCLOAK_ID?.trim();
 const keycloakSecret = process.env.KEYCLOAK_SECRET?.trim();
 const keycloakIssuer = process.env.KEYCLOAK_ISSUER?.trim();
-const hasKeycloakConfig = Boolean(keycloakId && keycloakSecret && keycloakIssuer);
+const isMockActive = process.env.NEXT_PUBLIC_MOCK_LOGIN === "true";
+const hasKeycloakConfig = Boolean(keycloakId && keycloakSecret && keycloakIssuer) && !isMockActive;
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -25,7 +26,7 @@ export const authOptions: NextAuthOptions = {
         ]
       : []),
 
-    // ── Formulario usuario/contraseña → valida contra Keycloak ───
+    // ── Formulario usuario/contraseña → valida contra Keycloak o API Mock ───
     CredentialsProvider({
       id: "credentials",
       name: "Banco Singular",
@@ -40,7 +41,53 @@ export const authOptions: NextAuthOptions = {
           console.warn("[Auth-Options] Missing username or password in credentials");
           return null;
         }
-        
+
+        // Si el login simulado/mock está activo, enviamos la petición a nuestro endpoint local del backend
+        if (isMockActive) {
+          const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3100";
+          const mockLoginUrl = `${apiBaseUrl}/api/auth/login`;
+          console.log("[Auth-Options] Local mock login mode active. Sending request to:", mockLoginUrl);
+
+          try {
+            const res = await fetch(mockLoginUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                username: credentials.username,
+                password: credentials.password,
+              }),
+            });
+
+            console.log("[Auth-Options] Mock login response status:", res.status);
+
+            if (!res.ok) {
+              const errorText = await res.text();
+              console.error("[Auth-Options] Mock login failed. Status:", res.status, "Body:", errorText);
+              return null;
+            }
+
+            const responseData = await res.json();
+            if (responseData.status !== "success" || !responseData.data) {
+              console.error("[Auth-Options] Mock login returned non-success response:", responseData);
+              return null;
+            }
+
+            const userData = responseData.data;
+            console.log("[Auth-Options] Mock user logged in successfully:", userData.name);
+
+            return {
+              id: userData.id,
+              name: userData.name,
+              email: userData.email,
+              roles: userData.roles,
+              accessToken: userData.accessToken,
+            };
+          } catch (error: any) {
+            console.error("[Auth-Options] Exception caught during mock login:", error?.message || error);
+            return null;
+          }
+        }
+
         console.log("[Auth-Options] Environment checks:", {
           hasIssuer: !!keycloakIssuer,
           hasClientId: !!keycloakId,

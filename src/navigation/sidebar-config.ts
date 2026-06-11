@@ -29,7 +29,6 @@ export const SIDEBAR_MODULES: SidebarModule[] = [
     children: [
       { label: "Composición de Clientes", href: "/cartera", hash: "composicion-clientes" },
       { label: "Análisis de Cartera",      href: "/cartera", hash: "analisis-cartera" },
-      { label: "Detalle de Cartera",       href: "/cartera", hash: "detalle-cartera" },
     ],
   },
   {

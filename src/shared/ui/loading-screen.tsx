@@ -46,8 +46,7 @@ export function LoadingScreen({ message = "Cargando permisos..." }: LoadingScree
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6"
-      style={{ background: "#ffffff" }}
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6 bg-background text-foreground"
       role="status"
       aria-label={message}
     >
@@ -63,22 +62,19 @@ export function LoadingScreen({ message = "Cargando permisos..." }: LoadingScree
           aria-hidden="true"
         >
           {/* Nodos */}
-          <circle cx="24" cy="10" r="5" fill="oklch(0.574 0.108 237)" />
-          <circle cx="38" cy="30" r="4" fill="oklch(0.574 0.108 237)" />
-          <circle cx="10" cy="30" r="4" fill="oklch(0.574 0.108 237)" />
-          <circle cx="24" cy="34" r="3" fill="oklch(0.38 0.14 249)" />
+          <circle cx="24" cy="10" r="5" className="fill-primary" />
+          <circle cx="38" cy="30" r="4" className="fill-primary" />
+          <circle cx="10" cy="30" r="4" className="fill-primary" />
+          <circle cx="24" cy="34" r="3" className="fill-secondary" />
           {/* Líneas */}
-          <line x1="24" y1="10" x2="38" y2="30" stroke="oklch(0.574 0.108 237)" strokeWidth="2" strokeLinecap="round" />
-          <line x1="24" y1="10" x2="10" y2="30" stroke="oklch(0.574 0.108 237)" strokeWidth="2" strokeLinecap="round" />
-          <line x1="10" y1="30" x2="24" y2="34" stroke="oklch(0.38 0.14 249)" strokeWidth="2" strokeLinecap="round" />
-          <line x1="38" y1="30" x2="24" y2="34" stroke="oklch(0.38 0.14 249)" strokeWidth="2" strokeLinecap="round" />
-          <line x1="10" y1="30" x2="38" y2="30" stroke="oklch(0.574 0.108 237)" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="3 3" />
+          <line x1="24" y1="10" x2="38" y2="30" className="stroke-primary" strokeWidth="2" strokeLinecap="round" />
+          <line x1="24" y1="10" x2="10" y2="30" className="stroke-primary" strokeWidth="2" strokeLinecap="round" />
+          <line x1="10" y1="30" x2="24" y2="34" className="stroke-secondary" strokeWidth="2" strokeLinecap="round" />
+          <line x1="38" y1="30" x2="24" y2="34" className="stroke-secondary" strokeWidth="2" strokeLinecap="round" />
+          <line x1="10" y1="30" x2="38" y2="30" className="stroke-primary" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="3 3" />
         </svg>
 
-        <span
-          className="text-3xl font-bold tracking-tight"
-          style={{ color: "oklch(0.38 0.14 249)" }}
-        >
+        <span className="text-3xl font-bold tracking-tight text-secondary">
           FC
         </span>
       </div>
@@ -86,23 +82,18 @@ export function LoadingScreen({ message = "Cargando permisos..." }: LoadingScree
       {/* Barra de progreso */}
       <div className="w-64 flex flex-col gap-2">
         <div
-          className="w-full h-1 rounded-full overflow-hidden"
-          style={{ background: "oklch(0.38 0.14 249 / 0.12)" }}
+          className="w-full h-1 rounded-full overflow-hidden bg-secondary/12"
         >
           <div
-            className="h-full rounded-full transition-all duration-300 ease-out"
+            className="h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-secondary to-primary"
             style={{
               width: `${progress}%`,
-              background: "linear-gradient(90deg, oklch(0.38 0.14 249), oklch(0.574 0.108 237))",
             }}
           />
         </div>
 
         {/* Mensaje */}
-        <p
-          className="text-center text-[13px] font-medium"
-          style={{ color: "oklch(0.38 0.14 249 / 0.65)" }}
-        >
+        <p className="text-center text-[13px] font-medium text-secondary/65">
           {message}
         </p>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, LabelList } from "recharts";
 import { CarteraActivaItem } from "../types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Map } from "lucide-react";
@@ -49,8 +49,22 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
     return acc;
   }, {} as Record<string, any>);
 
-  const chartData = Object.values(groupedByRegion);
   const products = Array.from(productsSet);
+  const chartData = Object.values(groupedByRegion).map((item: any) => {
+    const total = products.reduce((sum, product) => sum + (item[product] || 0), 0);
+    return {
+      ...item,
+      total,
+    };
+  });
+
+  const formatShortCurrency = (value: any) => {
+    const num = Number(value);
+    if (isNaN(num)) return "";
+    if (num >= 1_000_000) return `S/ ${(num / 1_000_000).toFixed(1)}M`;
+    if (num >= 1_000) return `S/ ${(num / 1_000).toFixed(0)}K`;
+    return `S/ ${num}`;
+  };
 
   const COLORS = [
     "#3b82f6", // blue-500
@@ -79,7 +93,7 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
           Saldo de Cartera Activa por Producto y Región
         </CardTitle>
         <CardDescription>
-          Distribución del saldo total consolidado (Clic en las barras para filtrar por región)
+          Distribución del saldo total consolidado
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -88,7 +102,7 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
             No hay datos para mostrar
           </div>
         ) : (
-          <div className="h-[400px] w-full">
+          <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={chartData}
@@ -102,7 +116,15 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
                 />
                 <Tooltip 
                   formatter={(value: any, name: any) => [formatCurrency(Number(value)), name]}
-                  contentStyle={{ backgroundColor: "rgba(10, 10, 10, 0.85)", borderColor: "#27272a", borderRadius: "8px", color: "#fff" }}
+                  contentStyle={{
+                    backgroundColor: "var(--popover)",
+                    borderColor: "var(--border)",
+                    borderRadius: "var(--radius)",
+                    fontSize: "12px",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                  }}
+                  labelStyle={{ color: "var(--foreground)", fontWeight: "bold" }}
+                  itemStyle={{ color: "var(--foreground)" }}
                 />
                 <Legend 
                   wrapperStyle={{ fontSize: '12px', paddingTop: '20px', cursor: 'pointer' }}
@@ -114,12 +136,14 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
                 />
                 
                 {products.map((product, index) => {
+                  const isLast = index === products.length - 1;
                   const isFadedProduct = activeProducto && activeProducto !== product;
                   return (
                     <Bar 
                       key={product} 
                       dataKey={product} 
                       stackId="a" 
+                      fill={COLORS[index % COLORS.length]}
                       radius={index === products.length - 1 ? [4, 4, 0, 0] as [number, number, number, number] : [0, 0, 0, 0] as [number, number, number, number]} 
                       className="cursor-pointer hover:opacity-80 transition-opacity"
                       onClick={(data: any) => {
@@ -129,6 +153,15 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
                         }
                       }}
                     >
+                      {isLast && (
+                        <LabelList 
+                          dataKey="total" 
+                          position="top" 
+                          formatter={formatShortCurrency}
+                          style={{ fontSize: '10px', fontWeight: 'semibold', fill: 'var(--foreground)' }}
+                          offset={8}
+                        />
+                      )}
                       {chartData.map((entry, dataIndex) => {
                         const isActiveRegion = activeRegion === entry.region;
                         const isFadedRegion = activeRegion && !isActiveRegion;
