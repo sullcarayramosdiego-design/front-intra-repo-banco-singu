@@ -95,9 +95,9 @@ export default async function CarteraPage(props: any) {
                 {formatCurrency(resumen.cartera_total_saldo)}
               </div>
               <div className="flex gap-1.5 items-center text-[10px] text-zinc-400 mt-1 font-mono">
-                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">(+) {formatCurrency(resumen.cartera_positivo_saldo)}</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">(+) {formatCurrency(resumen.cartera_positivo_saldo || 0)}</span>
                 <span className="text-zinc-300 dark:text-zinc-700">|</span>
-                <span className="text-rose-600 dark:text-rose-400 font-semibold">(-) {formatCurrency(resumen.cartera_negativo_saldo)}</span>
+                <span className="text-rose-600 dark:text-rose-400 font-semibold">(-) {formatCurrency(resumen.cartera_negativo_saldo || 0)}</span>
               </div>
               <p className="text-[10px] text-zinc-400 mt-1.5">Saldo absoluto consolidado</p>
             </CardContent>

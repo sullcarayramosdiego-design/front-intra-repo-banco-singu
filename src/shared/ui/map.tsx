@@ -1532,6 +1532,69 @@ function MapArc<T extends MapArcDatum = MapArcDatum>({
   return null;
 }
 
+function resolveCssColor(colorStr: string): string {
+  if (typeof window === "undefined" || !window.document) return colorStr;
+  
+  const trimmed = colorStr.trim();
+  const isCssVar = trimmed.startsWith("var(");
+  const isModernColor = trimmed.startsWith("oklch(") || trimmed.startsWith("lab(") || trimmed.startsWith("color(");
+  
+  if (!isCssVar && !isModernColor) {
+    return colorStr;
+  }
+
+  try {
+    // 1. Resolve CSS variable using a temporary DOM element
+    let resolvedColor = trimmed;
+    if (isCssVar) {
+      const tempDiv = document.createElement("div");
+      tempDiv.style.color = trimmed;
+      document.body.appendChild(tempDiv);
+      resolvedColor = getComputedStyle(tempDiv).color || trimmed;
+      document.body.removeChild(tempDiv);
+    }
+    
+    // 2. Convert resolved color (which could be lab(), oklch(), color(), etc. depending on browser engine)
+    // to standard rgb/rgba format using Canvas 2D context.
+    // This is because MapLibre GL JS color parser only supports standard hex/rgb/rgba/hsl colors.
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return resolvedColor;
+    
+    ctx.fillStyle = resolvedColor;
+    ctx.fillRect(0, 0, 1, 1);
+    
+    const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+    if (a === 255) {
+      return `rgb(${r}, ${g}, ${b})`;
+    } else {
+      return `rgba(${r}, ${g}, ${b}, ${(a / 255).toFixed(3)})`;
+    }
+  } catch (e) {
+    console.error("Error resolving CSS color:", colorStr, e);
+    return colorStr;
+  }
+}
+
+function resolveColorsInExpression(expr: any): any {
+  if (typeof expr === "string") {
+    return resolveCssColor(expr);
+  }
+  if (Array.isArray(expr)) {
+    return expr.map(resolveColorsInExpression);
+  }
+  if (expr !== null && typeof expr === "object") {
+    const resolved: any = {};
+    for (const [key, val] of Object.entries(expr)) {
+      resolved[key] = resolveColorsInExpression(val);
+    }
+    return resolved;
+  }
+  return expr;
+}
+
 type MapClusterLayerProps<
   P extends GeoJSON.GeoJsonProperties = GeoJSON.GeoJsonProperties,
 > = {
@@ -1545,8 +1608,8 @@ type MapClusterLayerProps<
   clusterColors?: [string, string, string];
   /** Point count thresholds for color/size steps: [medium, large] (default: [100, 750]) */
   clusterThresholds?: [number, number];
-  /** Color for unclustered individual points (default: "#3b82f6") */
-  pointColor?: string;
+  /** Color for unclustered individual points (default: "#3b82f6") or MapLibre paint expression */
+  pointColor?: string | any[];
   /** Callback when an unclustered point is clicked */
   onPointClick?: (
     feature: GeoJSON.Feature<GeoJSON.Point, P>,
@@ -1579,10 +1642,22 @@ function MapClusterLayer<
   const clusterCountLayerId = `cluster-count-${id}`;
   const unclusteredLayerId = `unclustered-point-${id}`;
 
+  const resolvedTheme = useResolvedTheme();
+
+  const resolvedClusterColors = useMemo(() => {
+    if (!isLoaded) return clusterColors;
+    return resolveColorsInExpression(clusterColors) as [string, string, string];
+  }, [isLoaded, clusterColors, resolvedTheme]);
+
+  const resolvedPointColor = useMemo(() => {
+    if (!isLoaded) return pointColor;
+    return resolveColorsInExpression(pointColor);
+  }, [isLoaded, pointColor, resolvedTheme]);
+
   const stylePropsRef = useRef({
-    clusterColors,
+    clusterColors: resolvedClusterColors,
     clusterThresholds,
-    pointColor,
+    pointColor: resolvedPointColor,
   });
 
   // Add source and layers on mount
@@ -1608,11 +1683,11 @@ function MapClusterLayer<
         "circle-color": [
           "step",
           ["get", "point_count"],
-          clusterColors[0],
+          resolvedClusterColors[0],
           clusterThresholds[0],
-          clusterColors[1],
+          resolvedClusterColors[1],
           clusterThresholds[1],
-          clusterColors[2],
+          resolvedClusterColors[2],
         ],
         "circle-radius": [
           "step",
@@ -1652,7 +1727,7 @@ function MapClusterLayer<
       source: sourceId,
       filter: ["!", ["has", "point_count"]],
       paint: {
-        "circle-color": pointColor,
+        "circle-color": resolvedPointColor,
         "circle-radius": 5,
         "circle-stroke-width": 2,
         "circle-stroke-color": "#fff",
@@ -1690,19 +1765,22 @@ function MapClusterLayer<
 
     const prev = stylePropsRef.current;
     const colorsChanged =
-      prev.clusterColors !== clusterColors ||
-      prev.clusterThresholds !== clusterThresholds;
+      prev.clusterColors[0] !== resolvedClusterColors[0] ||
+      prev.clusterColors[1] !== resolvedClusterColors[1] ||
+      prev.clusterColors[2] !== resolvedClusterColors[2] ||
+      prev.clusterThresholds[0] !== clusterThresholds[0] ||
+      prev.clusterThresholds[1] !== clusterThresholds[1];
 
     // Update cluster layer colors and sizes
     if (map.getLayer(clusterLayerId) && colorsChanged) {
       map.setPaintProperty(clusterLayerId, "circle-color", [
         "step",
         ["get", "point_count"],
-        clusterColors[0],
+        resolvedClusterColors[0],
         clusterThresholds[0],
-        clusterColors[1],
+        resolvedClusterColors[1],
         clusterThresholds[1],
-        clusterColors[2],
+        resolvedClusterColors[2],
       ]);
       map.setPaintProperty(clusterLayerId, "circle-radius", [
         "step",
@@ -1716,19 +1794,24 @@ function MapClusterLayer<
     }
 
     // Update unclustered point layer color
-    if (map.getLayer(unclusteredLayerId) && prev.pointColor !== pointColor) {
-      map.setPaintProperty(unclusteredLayerId, "circle-color", pointColor);
+    const pointColorChanged = JSON.stringify(prev.pointColor) !== JSON.stringify(resolvedPointColor);
+    if (map.getLayer(unclusteredLayerId) && pointColorChanged) {
+      map.setPaintProperty(unclusteredLayerId, "circle-color", resolvedPointColor);
     }
 
-    stylePropsRef.current = { clusterColors, clusterThresholds, pointColor };
+    stylePropsRef.current = {
+      clusterColors: resolvedClusterColors,
+      clusterThresholds,
+      pointColor: resolvedPointColor,
+    };
   }, [
     isLoaded,
     map,
     clusterLayerId,
     unclusteredLayerId,
-    clusterColors,
+    resolvedClusterColors,
     clusterThresholds,
-    pointColor,
+    resolvedPointColor,
   ]);
 
   // Handle click events

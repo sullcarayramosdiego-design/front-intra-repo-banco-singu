@@ -1,4 +1,4 @@
-import { BarChart3, Wallet, Users } from "lucide-react";
+import { BarChart3, Wallet, Users, Trophy } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface SidebarChild {
@@ -42,13 +42,22 @@ export const SIDEBAR_MODULES: SidebarModule[] = [
     ],
   },
   {
-    key: "ejecutivos",
-    label: "Ejecutivos y Riesgo",
+    key: "riesgos",
+    label: "Riesgo Crediticio",
     icon: Users,
-    href: "/ejecutivos",
+    href: "/riesgos",
     children: [
-      { label: "Mapa de Riesgo",          href: "/ejecutivos", hash: "mapa-riesgo" },
-      { label: "Desempeño de Ejecutivos", href: "/ejecutivos", hash: "desempenio-ejecutivos" },
+      { label: "Mapa de Riesgo", href: "/riesgos", hash: "mapa-riesgo" },
+    ],
+  },
+  {
+    key: "desempeno",
+    label: "Desempeño de Ejecutivos",
+    icon: Trophy,
+    href: "/desempeno",
+    children: [
+      { label: "Ranking de Ejecutivos", href: "/desempeno", hash: "ranking-desempeno" },
+      { label: "Tabla de Resultados",   href: "/desempeno", hash: "tabla-ejecutivos" },
     ],
   },
 ];

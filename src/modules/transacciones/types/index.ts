@@ -5,3 +5,11 @@ export interface ActividadTransaccionalItem {
   cantidad_transacciones: number;
   monto_total: number;
 }
+
+export interface ActividadTransaccionalResponse {
+  items: ActividadTransaccionalItem[];
+  canales: string[];
+  periodos: string[];
+  sucursales: string[];
+  tipos: string[];
+}
