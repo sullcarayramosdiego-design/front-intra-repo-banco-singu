@@ -19,8 +19,14 @@ interface ResumenDashboard {
 
 export const revalidate = 30;
 
-export default async function CarteraPage() {
-  const [resumen, carteraData, clientesData] = await Promise.all([
+export default async function CarteraPage(props: any) {
+  // Await searchParams for Next.js 15+ compatibility
+  const searchParams = await props.searchParams;
+  const regionParams = searchParams?.region as string | undefined;
+  const segmentoParams = searchParams?.segmento as string | undefined;
+  const productoParams = searchParams?.producto as string | undefined;
+
+  const [resumenOriginal, carteraData, clientesData] = await Promise.all([
     fetcher<ResumenDashboard>("/api/reportes/resumen").catch(() => ({
       total_clientes: 0,
       total_cuentas_activas: 0,
@@ -30,6 +36,30 @@ export default async function CarteraPage() {
     CarteraService.getCarteraActiva().catch(() => []),
     CarteraService.getComposicionClientes().catch(() => []),
   ]);
+
+  // Aplicar filtros locales (Client-Side filtering en el Server Component)
+  let filteredCartera = carteraData;
+  if (regionParams) {
+    filteredCartera = filteredCartera.filter((item) => item.region === regionParams);
+  }
+  if (productoParams) {
+    filteredCartera = filteredCartera.filter((item) => item.tipo_producto === productoParams);
+  }
+
+  let filteredClientes = clientesData;
+  if (segmentoParams) {
+    filteredClientes = filteredClientes.filter((item) => item.segmento === segmentoParams);
+  }
+
+  // Recalcular KPIs si hay filtros
+  const cartera_total_saldo = filteredCartera.reduce((acc, curr) => acc + Math.abs(curr.saldo_total), 0);
+  const total_clientes = filteredClientes.reduce((acc, curr) => acc + (curr.cantidad_clientes || 0), 0);
+  
+  const resumen = {
+    ...resumenOriginal,
+    cartera_total_saldo: (regionParams || productoParams) ? cartera_total_saldo : resumenOriginal.cartera_total_saldo,
+    total_clientes: segmentoParams ? total_clientes : resumenOriginal.total_clientes,
+  };
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("es-PE", {
@@ -42,12 +72,12 @@ export default async function CarteraPage() {
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full px-4 md:px-6">
       <HashScrollHandler />
 
-      {/* Sidebar de Filtros (Ocupa 1 columna en pantallas grandes) */}
-      <div className="lg:col-span-1">
+      {/* Sidebar de Filtros */}
+      <div className="lg:col-span-1 lg:order-last">
         <CarteraFilters />
       </div>
 
-      {/* Contenido Principal (Ocupa 3 columnas) */}
+      {/* Contenido Principal */}
       <div className="lg:col-span-3 space-y-6">
         {/* KPIs */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -114,13 +144,13 @@ export default async function CarteraPage() {
 
         {/* Secciones */}
         <div id="composicion-clientes" className="scroll-mt-4">
-          <ClientesComposition data={clientesData} />
+          <ClientesComposition data={filteredClientes} />
         </div>
         <div id="analisis-cartera" className="scroll-mt-4">
-          <CarteraCharts data={carteraData} />
+          <CarteraCharts data={filteredCartera} />
         </div>
         <div id="detalle-cartera" className="space-y-2 scroll-mt-4">
-          <CarteraAdvancedCharts data={carteraData} />
+          <CarteraAdvancedCharts data={filteredCartera} />
         </div>
       </div>
     </div>

@@ -1,15 +1,31 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from "recharts";
 import { CarteraActivaItem } from "../types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Map } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface CarteraAdvancedChartsProps {
   data: CarteraActivaItem[];
 }
 
 export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleFilter = (key: string, value: string) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    if (current.get(key) === value) {
+      current.delete(key);
+    } else {
+      current.set(key, value);
+    }
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+    router.push(`/cartera${query}`);
+  };
+
   // Transformar data: agrupar por región y poner el saldo de cada producto como propiedad
   // ej: { region: 'LIMA', 'CREDITO_PERSONAL': 1000, 'TARJETA_CREDITO': 500 }
   
@@ -28,7 +44,7 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
     }
     
     // Sumar saldo_total (podría haber múltiples registros para la misma combinación si la query lo permite)
-    acc[region][product] = (acc[region][product] || 0) + curr.saldo_total;
+    acc[region][product] = (acc[region][product] || 0) + Math.abs(curr.saldo_total);
     
     return acc;
   }, {} as Record<string, any>);
@@ -52,6 +68,9 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
       maximumFractionDigits: 0,
     }).format(value);
 
+  const activeRegion = searchParams.get('region');
+  const activeProducto = searchParams.get('producto');
+
   return (
     <Card className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border-zinc-150 dark:border-zinc-800">
       <CardHeader>
@@ -60,7 +79,7 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
           Saldo de Cartera Activa por Producto y Región
         </CardTitle>
         <CardDescription>
-          Distribución del saldo total consolidado
+          Distribución del saldo total consolidado (Clic en las barras para filtrar por región)
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -85,17 +104,47 @@ export function CarteraAdvancedCharts({ data }: CarteraAdvancedChartsProps) {
                   formatter={(value: any, name: any) => [formatCurrency(Number(value)), name]}
                   contentStyle={{ backgroundColor: "rgba(10, 10, 10, 0.85)", borderColor: "#27272a", borderRadius: "8px", color: "#fff" }}
                 />
-                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
+                <Legend 
+                  wrapperStyle={{ fontSize: '12px', paddingTop: '20px', cursor: 'pointer' }}
+                  onClick={(e) => {
+                    if (e && e.dataKey) {
+                      handleFilter('producto', String(e.dataKey));
+                    }
+                  }}
+                />
                 
-                {products.map((product, index) => (
-                  <Bar 
-                    key={product} 
-                    dataKey={product} 
-                    stackId="a" 
-                    fill={COLORS[index % COLORS.length]} 
-                    radius={index === products.length - 1 ? [4, 4, 0, 0] as [number, number, number, number] : [0, 0, 0, 0] as [number, number, number, number]} 
-                  />
-                ))}
+                {products.map((product, index) => {
+                  const isFadedProduct = activeProducto && activeProducto !== product;
+                  return (
+                    <Bar 
+                      key={product} 
+                      dataKey={product} 
+                      stackId="a" 
+                      radius={index === products.length - 1 ? [4, 4, 0, 0] as [number, number, number, number] : [0, 0, 0, 0] as [number, number, number, number]} 
+                      className="cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={(data: any) => {
+                        if (data && data.region) {
+                          // Al hacer clic filtramos por la región de esa barra
+                          handleFilter('region', data.region);
+                        }
+                      }}
+                    >
+                      {chartData.map((entry, dataIndex) => {
+                        const isActiveRegion = activeRegion === entry.region;
+                        const isFadedRegion = activeRegion && !isActiveRegion;
+                        const opacity = (isFadedProduct || isFadedRegion) ? 0.3 : 1;
+                        
+                        return (
+                          <Cell 
+                            key={`cell-${dataIndex}`} 
+                            fill={COLORS[index % COLORS.length]} 
+                            opacity={opacity}
+                          />
+                        );
+                      })}
+                    </Bar>
+                  );
+                })}
               </BarChart>
             </ResponsiveContainer>
           </div>

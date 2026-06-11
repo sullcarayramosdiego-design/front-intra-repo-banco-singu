@@ -4,6 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { CarteraActivaItem } from "../types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/shared/ui/chart";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface CarteraChartsProps {
   data: CarteraActivaItem[];
@@ -27,6 +28,21 @@ const barChartConfig = {
 } as const satisfies ChartConfig;
 
 export function CarteraCharts({ data }: CarteraChartsProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleFilter = (key: string, value: string) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    if (current.get(key) === value) {
+      current.delete(key);
+    } else {
+      current.set(key, value);
+    }
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+    router.push(`/cartera${query}`);
+  };
+
   // 1. Agrupar saldos por Tipo de Producto para el Pie Chart (usando valor absoluto para fines de visualización de saldo positivo)
   const productTypeMap = data.reduce((acc, curr) => {
     const type = curr.tipo_producto || "OTROS";
@@ -59,13 +75,16 @@ export function CarteraCharts({ data }: CarteraChartsProps) {
     return `S/ ${value}`;
   };
 
+  const activeProducto = searchParams.get('producto');
+  const activeRegion = searchParams.get('region');
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {/* Gráfico de Distribución por Tipo de Producto */}
       <Card className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border-zinc-150 dark:border-zinc-800">
         <CardHeader>
           <CardTitle className="text-zinc-850 dark:text-zinc-100">Composición del Portafolio</CardTitle>
-          <CardDescription>Distribución de cartera activa por tipo de producto (saldo absoluto)</CardDescription>
+          <CardDescription>Distribución de cartera activa por tipo de producto (Clic para filtrar)</CardDescription>
         </CardHeader>
         <CardContent className="h-[300px]">
           {pieData.length === 0 ? (
@@ -84,12 +103,19 @@ export function CarteraCharts({ data }: CarteraChartsProps) {
                     dataKey="value"
                     nameKey="name"
                   >
-                    {pieData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={pieChartConfig[entry.keyName as keyof typeof pieChartConfig]?.color || "var(--chart-5)"} 
-                      />
-                    ))}
+                    {pieData.map((entry, index) => {
+                      const isActive = activeProducto === entry.keyName;
+                      const isFaded = activeProducto && !isActive;
+                      return (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={pieChartConfig[entry.keyName as keyof typeof pieChartConfig]?.color || "var(--chart-5)"} 
+                          className="cursor-pointer hover:opacity-80 transition-opacity"
+                          opacity={isFaded ? 0.3 : 1}
+                          onClick={() => handleFilter('producto', entry.keyName)}
+                        />
+                      );
+                    })}
                   </Pie>
                   <ChartTooltip
                     cursor={false}
@@ -105,7 +131,12 @@ export function CarteraCharts({ data }: CarteraChartsProps) {
                     verticalAlign="bottom" 
                     align="center" 
                     iconType="circle" 
-                    wrapperStyle={{ fontSize: "11px" }} 
+                    wrapperStyle={{ fontSize: "11px", cursor: "pointer" }} 
+                    onClick={(e: any) => {
+                      if(e && e.payload && e.payload.keyName) {
+                        handleFilter('producto', e.payload.keyName);
+                      }
+                    }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -118,7 +149,7 @@ export function CarteraCharts({ data }: CarteraChartsProps) {
       <Card className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border-zinc-150 dark:border-zinc-800">
         <CardHeader>
           <CardTitle className="text-zinc-850 dark:text-zinc-100">Distribución Geográfica</CardTitle>
-          <CardDescription>Monto administrado agrupado por región comercial</CardDescription>
+          <CardDescription>Monto administrado agrupado por región comercial (Clic para filtrar)</CardDescription>
         </CardHeader>
         <CardContent className="h-[300px]">
           {barData.length === 0 ? (
@@ -139,7 +170,26 @@ export function CarteraCharts({ data }: CarteraChartsProps) {
                       />
                     }
                   />
-                  <Bar dataKey="monto" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
+                  <Bar 
+                    dataKey="monto" 
+                    radius={[4, 4, 0, 0]} 
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={(data: any) => {
+                      if (data && data.name) handleFilter('region', data.name);
+                    }}
+                  >
+                    {barData.map((entry, index) => {
+                      const isActive = activeRegion === entry.name;
+                      const isFaded = activeRegion && !isActive;
+                      return (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill="var(--chart-1)"
+                          opacity={isFaded ? 0.3 : 1}
+                        />
+                      );
+                    })}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>

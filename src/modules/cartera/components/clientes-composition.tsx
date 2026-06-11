@@ -4,12 +4,28 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { ClienteComposicionItem } from "../types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Users, Building, Briefcase } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface ClientesCompositionProps {
   data: ClienteComposicionItem[];
 }
 
 export function ClientesComposition({ data }: ClientesCompositionProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleFilter = (key: string, value: string) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    if (current.get(key) === value) {
+      current.delete(key);
+    } else {
+      current.set(key, value);
+    }
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+    router.push(`/cartera${query}`);
+  };
+
   // 1. Agrupar por Tipo de Persona (Natural vs Jurídica)
   const totalClientes = data.reduce((acc, curr) => acc + curr.cantidad_clientes, 0);
   
@@ -45,6 +61,8 @@ export function ClientesComposition({ data }: ClientesCompositionProps) {
     "var(--chart-5)",
     "var(--chart-1)",
   ];
+
+  const activeSegmento = searchParams.get('segmento');
 
   return (
     <div className="grid gap-6 md:grid-cols-3">
@@ -109,7 +127,7 @@ export function ClientesComposition({ data }: ClientesCompositionProps) {
             <Briefcase className="h-4 w-4 text-zinc-500" />
             Segmentación de Clientes
           </CardTitle>
-          <CardDescription>Clientes por segmento comercial</CardDescription>
+          <CardDescription>Clientes por segmento comercial (Clic para filtrar)</CardDescription>
         </CardHeader>
         <CardContent className="h-[180px]">
           {barData.length === 0 ? (
@@ -124,10 +142,25 @@ export function ClientesComposition({ data }: ClientesCompositionProps) {
                   formatter={(value: any) => [value.toLocaleString("es-PE"), "Clientes"]}
                   contentStyle={{ backgroundColor: "rgba(10, 10, 10, 0.85)", borderColor: "#27272a", borderRadius: "8px", color: "#fff", fontSize: "11px" }}
                 />
-                <Bar dataKey="cantidad" radius={[0, 4, 4, 0]}>
-                  {barData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
+                <Bar 
+                  dataKey="cantidad" 
+                  radius={[0, 4, 4, 0]}
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={(data) => {
+                    if (data && data.name) handleFilter('segmento', data.name);
+                  }}
+                >
+                  {barData.map((entry, index) => {
+                    const isActive = activeSegmento === entry.name;
+                    const isFaded = activeSegmento && !isActive;
+                    return (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={COLORS[index % COLORS.length]} 
+                        opacity={isFaded ? 0.3 : 1}
+                      />
+                    );
+                  })}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

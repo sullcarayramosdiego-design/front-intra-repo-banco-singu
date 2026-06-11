@@ -1,21 +1,19 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Filter, MapPin, Briefcase, RefreshCcw } from "lucide-react";
+import { Filter, MapPin, RefreshCcw } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
-export function CarteraFilters() {
+export function EjecutivosFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [region, setRegion] = useState("");
-  const [segmento, setSegmento] = useState("");
 
   // Sincronizar estado local con la URL
   useEffect(() => {
     setRegion(searchParams.get("region") || "");
-    setSegmento(searchParams.get("segmento") || "");
   }, [searchParams]);
 
   const applyFilters = () => {
@@ -24,17 +22,14 @@ export function CarteraFilters() {
     if (region) current.set("region", region);
     else current.delete("region");
 
-    if (segmento) current.set("segmento", segmento);
-    else current.delete("segmento");
-
     const search = current.toString();
     const query = search ? `?${search}` : "";
 
-    router.push(`/cartera${query}`);
+    router.push(`/ejecutivos${query}`);
   };
 
   const clearFilters = () => {
-    router.push(`/cartera`);
+    router.push(`/ejecutivos`);
   };
 
   return (
@@ -42,7 +37,7 @@ export function CarteraFilters() {
       <CardHeader className="pb-4 border-b border-border/50">
         <CardTitle className="text-zinc-850 dark:text-zinc-100 flex items-center gap-2 text-base font-bold">
           <Filter className="h-4 w-4 text-zinc-500" />
-          Filtros de Cartera
+          Filtros de Ejecutivos
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-4 space-y-6">
@@ -66,25 +61,6 @@ export function CarteraFilters() {
           </select>
         </div>
 
-        {/* Filtro de Segmento */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-            <Briefcase className="h-3 w-3" />
-            Segmento
-          </label>
-          <select 
-            value={segmento}
-            onChange={(e) => setSegmento(e.target.value)}
-            className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <option value="">Todos los segmentos</option>
-            <option value="VIP">VIP</option>
-            <option value="PREMIUM">Premium</option>
-            <option value="MASIVO">Masivo</option>
-            <option value="PYME">Pyme</option>
-          </select>
-        </div>
-
         <div className="flex gap-2">
           <button 
             onClick={applyFilters}
@@ -92,7 +68,7 @@ export function CarteraFilters() {
           >
             Aplicar
           </button>
-          {(region || segmento || searchParams.has('producto')) && (
+          {searchParams.has('region') && (
             <button 
               onClick={clearFilters}
               className="bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700 h-9 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center"

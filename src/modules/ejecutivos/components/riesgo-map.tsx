@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { Map, MapControls, MapMarker, MarkerContent, MarkerTooltip, MapClusterLayer } from "@/shared/ui/map";
 import { ShieldAlert, BadgeAlert, MapPin, Activity } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface RiesgoMapProps {
   data: RiesgoCrediticioItem[];
@@ -114,7 +115,23 @@ function getRiskLevel(clasificaciones: Record<string, number>): string {
 }
 
 export function RiesgoMap({ data }: RiesgoMapProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeRegion = searchParams.get('region');
+
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+
+  const handleFilter = (key: string, value: string) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    if (current.get(key) === value) {
+      current.delete(key);
+    } else {
+      current.set(key, value);
+    }
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+    router.push(`/ejecutivos${query}`);
+  };
 
   // 1. Agrupar saldos por Clasificación de Cartera
   const totalSaldoEnRiesgo = data.reduce((acc, curr) => acc + Math.abs(curr.saldo_total || 0), 0);
@@ -286,7 +303,10 @@ export function RiesgoMap({ data }: RiesgoMapProps) {
                     key={rm.region}
                     longitude={rm.coords[0]}
                     latitude={rm.coords[1]}
-                    onClick={() => setSelectedRegion(rm.region === selectedRegion ? null : rm.region)}
+                    onClick={() => {
+                      setSelectedRegion(rm.region === selectedRegion ? null : rm.region);
+                      handleFilter('region', rm.region);
+                    }}
                   >
                     <MarkerContent>
                       <div
@@ -367,7 +387,10 @@ export function RiesgoMap({ data }: RiesgoMapProps) {
                         <Fragment key={row.region}>
                           <TableRow
                             className={`border-zinc-100 dark:border-zinc-800/50 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/10 cursor-pointer transition-colors ${isSelected ? "bg-sky-50/50 dark:bg-sky-950/10" : ""}`}
-                            onClick={() => setSelectedRegion(isSelected ? null : row.region)}
+                            onClick={() => {
+                              setSelectedRegion(isSelected ? null : row.region);
+                              handleFilter('region', row.region);
+                            }}
                           >
                             <TableCell className="pl-4">
                               <div className="flex items-center gap-2">

@@ -4,6 +4,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { ActividadTransaccionalItem } from "../types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/shared/ui/chart";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface TransaccionesChartProps {
   data: ActividadTransaccionalItem[];
@@ -24,6 +25,24 @@ const barChartConfig = {
 } as const satisfies ChartConfig;
 
 export function TransaccionesChart({ data }: TransaccionesChartProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleFilter = (key: string, value: string) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    if (current.get(key) === value) {
+      current.delete(key);
+    } else {
+      current.set(key, value);
+    }
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+    router.push(`/transacciones${query}`);
+  };
+
+  const activePeriodo = searchParams.get('periodo');
+  const activeCanal = searchParams.get('canal');
+
   // 1. Agrupar por Periodo (Tendencia Temporal)
   const periodMap = data.reduce((acc, curr) => {
     const period = curr.periodo || "DESCONOCIDO";
@@ -81,7 +100,16 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
           ) : (
             <ChartContainer config={areaChartConfig} className="h-full w-full aspect-auto">
               <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                <AreaChart data={trendData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                <AreaChart 
+                  data={trendData} 
+                  margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+                  className="cursor-pointer"
+                  onClick={(e: any) => {
+                    if (e && e.activeLabel) {
+                      handleFilter('periodo', e.activeLabel);
+                    }
+                  }}
+                >
                   <defs>
                     <linearGradient id="colorMonto" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor={areaChartConfig.monto.color} stopOpacity={0.4} />
@@ -100,7 +128,17 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
                       />
                     }
                   />
-                  <Area type="monotone" dataKey="monto" stroke={areaChartConfig.monto.color} strokeWidth={2} fillOpacity={1} fill="url(#colorMonto)" />
+                  <Area 
+                    type="monotone" 
+                    dataKey="monto" 
+                    stroke={areaChartConfig.monto.color} 
+                    strokeWidth={2} 
+                    fillOpacity={1} 
+                    fill="url(#colorMonto)" 
+                  />
+                  {/* Para AreaChart podemos hacer clic en la gráfica en sí via AreaChart onClick si se quiere, 
+                      pero aquí como es continua no es un Bar, se clickea en el dot. 
+                      Para simplificar usaremos onClick sobre el AreaChart, recibiendo e.activeLabel */}
                 </AreaChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -133,10 +171,25 @@ export function TransaccionesChart({ data }: TransaccionesChartProps) {
                       />
                     }
                   />
-                  <Bar dataKey="cantidad" radius={[4, 4, 0, 0]}>
-                    {canalData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
+                  <Bar 
+                    dataKey="cantidad" 
+                    radius={[4, 4, 0, 0]}
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={(data: any) => {
+                      if (data && data.name) handleFilter('canal', data.name);
+                    }}
+                  >
+                    {canalData.map((entry, index) => {
+                      const isActive = activeCanal === entry.name;
+                      const isFaded = activeCanal && !isActive;
+                      return (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={COLORS[index % COLORS.length]} 
+                          opacity={isFaded ? 0.3 : 1}
+                        />
+                      );
+                    })}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación Ejecutiva - Banco Singular</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Lato:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 1. THE SETUP */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Normalize margins for paragraphs to ovrride browser defaults. */
+        p {
+            margin: 0;
+            margin-bottom: 15px;
+        }
+
+        body {
+            background-color: #e2e8f0;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr;
+            margin: 0;
+            min-height: 100vh;
+            padding: 20px 0;
+            place-items: center;
+        }
+
+        .slide-container {
+            align-items: center;
+            background-color: #F8FAFC;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            font-family: 'Lato', sans-serif;
+            height: 720px;
+            justify-content: center;
+            overflow: hidden;
+            padding: 60px;
+            position: relative;
+            width: 1280px;
+        }
+
+        /* 1.1 BACKGROUND STYLING */
+        /* Abstract Corporate Background Design */
+        .slide-container::before {
+            content: '';
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 0% 0%, rgba(89, 140, 187, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 79, 143, 0.05) 0%, transparent 40%);
+        }
+
+        .slide-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #004F8F, #598CBB);
+            z-index: 2;
+        }
+
+        .slide-container>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 2. CONSISTENT TYPOGRAPHY */
+
+        /* Headings Font */
+        .slide-container h1,
+        .slide-container h2,
+        .slide-container h3,
+        .slide-container h4 {
+            color: #004F8F;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+        }
+
+        /* Body Text Font */
+        .slide-container p,
+        .slide-container li,
+        .slide-container .subtitle,
+        .slide-container .number-label,
+        .slide-container .legend li,
+        .slide-container .chart-summary,
+        .slide-container .bar .label,
+        .slide-container th,
+        .slide-container td,
+        .slide-container .alternating-text-tile p,
+        .slide-container .bleed-text-side p {
+            color: #334155;
+            font-family: 'Lato', sans-serif;
+        }
+
+        /* Consistent Font Sizes */
+        .slide-container h1 {
+            font-size: 70px;
+        }
+
+        .slide-container .slide-title {
+            /* This is an h2 */
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .slide-container h3 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        /* Unified body text size */
+        .slide-container p,
+        .slide-container li,
+        .slide-container .subtitle,
+        .slide-container .legend li,
+        .slide-container .chart-summary,
+        .slide-container .bar .label,
+        .slide-container th,
+        .slide-container td,
+        .slide-container .alternating-text-tile p,
+        .slide-container .bleed-text-side p {
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .slide-container .subtitle {
+            font-weight: 400;
+            margin: 20px auto;
+        }
+
+        .slide-container .content-area {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* 3. LAYOUT DEFINITIONS */
+
+        .title-layout {
+            text-align: center;
+        }
+
+        .two-column {
+            align-items: flex-start;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            width: 100%;
+        }
+
+        .two-column.tiled {
+            align-items: stretch;
+        }
+
+        .two-column.tiled>div {
+            background-color: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .two-column.tiled h3 {
+            color: #598CBB;
+        }
+
+        .two-column ul {
+            list-style: disc;
+            margin: 0;
+            padding-left: 25px;
+        }
+
+        .two-column li {
+            margin-bottom: 15px;
+        }
+
+        .image-wrapper {
+            border-radius: 12px;
+            height: 350px;
+            max-width: 100%;
+            overflow: hidden;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-wrapper img {
+            height: 100%;
+            max-width: 100%;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .two-column .image-wrapper img {
+            object-fit: contain;
+        }
+
+        .tiled-content {
+            align-items: stretch;
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .tile {
+            align-items: center;
+            background-color: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: flex-start;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .tile .icon {
+            color: #598CBB;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .bullet-list {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .bullet-list ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .bullet-list li {
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .bullet-list i {
+            color: #598CBB;
+            font-size: 24px;
+            left: 0;
+            margin-top: 5px;
+            position: absolute;
+            text-align: center;
+            top: 0;
+        }
+
+        .bullet-list li strong {
+            color: #004F8F;
+            font-weight: 700;
+        }
+
+        .image-tile {
+            flex: 1;
+            text-align: center;
+        }
+
+        .image-tile .image-wrapper {
+            height: 225px;
+            margin-bottom: 20px;
+        }
+
+        .full-bg-image {
+            background-position: center;
+            background-size: cover;
+        }
+
+        .full-bg-image .content-overlay {
+            text-align: center;
+        }
+
+        .full-bg-image h2,
+        .full-bg-image p {
+            color: #1e293b;
+        }
+
+        .highlight-numbers-layout>div:first-child {
+            flex: 0 0 40%;
+            text-align: center;
+        }
+
+        .highlight-numbers-layout .number {
+            color: #598CBB;
+            font-size: 150px;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1;
+        }
+
+        .highlight-numbers-layout .number-label {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* Section Title */
+
+        .section-title-layout {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .section-title-layout h2 {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .section-title-layout p {
+            font-size: 22px;
+            margin: 0 auto;
+            max-width: 700px;
+        }
+
+        .section-title-layout hr {
+            background-color: #598CBB;
+            border: none;
+            height: 5px;
+            margin: 30px auto;
+            width: 100px;
+        }
+
+        /* Table Layout */
+
+        .table-layout {
+            width: 100%;
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-layout table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .table-layout th,
+        .table-layout td {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 18px 24px;
+            text-align: left;
+        }
+
+        .table-layout th {
+            background-color: #004F8F;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .table-layout tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Timeline Layout */
+
+        .timeline-layout {
+            align-items: stretch;
+            display: flex;
+            height: stretch;
+            justify-content: space-between;
+            position: relative;
+            width: 100%;
+        }
+
+        .timeline-layout .timeline-line {
+            background-color: #e2e8f0;
+            height: 4px;
+            left: 0;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-2px);
+            width: 100%;
+            z-index: 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            text-align: center;
+            width: 23%;
+        }
+
+        .timeline-item::after {
+            background-color: #fff;
+            border-radius: 50%;
+            border: 4px solid #598CBB;
+            content: '';
+            height: 20px;
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            z-index: 1;
+        }
+
+        .timeline-item .content-wrapper {
+            left: 0;
+            position: absolute;
+            width: 100%;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .timeline-item:nth-child(odd) .content-wrapper {
+            bottom: 50%;
+            margin-bottom: 25px;
+        }
+
+        .timeline-item:nth-child(even) .content-wrapper {
+            margin-top: 25px;
+            top: 50%;
+        }
+
+        .timeline-item h3 {
+            color: #598CBB;
+            font-size: 24px;
+        }
+
+        /* Q&A Layout */
+
+        .qa-layout {
+            margin: 0 auto;
+            text-align: center;
+            width: 100%;
+            align-self: center;
+        }
+
+        .qa-layout h2 {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .qa-layout p {
+            font-size: 22px;
+        }
+
+        .qa-layout .contact-info {
+            color: #334155;
+            font-size: 20px;
+            margin-top: 40px;
+        }
+
+        /* --- ARCHITECTURE DIAGRAMS STYLES --- */
+
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .arch-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .arch-group {
+            border: 2px dashed #94a3b8;
+            border-radius: 12px;
+            padding: 30px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.4);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .arch-group.vertical {
+            flex-direction: column;
+        }
+
+        .arch-group-title {
+            position: absolute;
+            top: -14px;
+            left: 20px;
+            background: #F8FAFC;
+            padding: 0 10px;
+            font-weight: bold;
+            color: #004F8F;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .arch-box {
+            background: #ffffff;
+            border: 2px solid #598CBB;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            width: 220px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .arch-box i {
+            font-size: 32px;
+            color: #598CBB;
+        }
+
+        .arch-box h4 {
+            font-size: 18px;
+            margin: 0;
+            color: #004F8F;
+        }
+
+        .arch-box p {
+            font-size: 14px;
+            margin: 0;
+            color: #64748b;
+        }
+
+        .arch-box.db {
+            border-color: #004F8F;
+            background: #f0f7ff;
+        }
+
+        .arch-box.db i {
+            color: #004F8F;
+        }
+
+        .arch-box.auth {
+            border-color: #10B981;
+        }
+
+        .arch-box.auth i {
+            color: #10B981;
+        }
+
+        .arch-arrow {
+            color: #94a3b8;
+            font-size: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .arch-arrow span {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: bold;
+        }
+
+        /* --- COMPLEX CI/CD ARCHITECTURE STYLES --- */
+        .complex-arch {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+            font-size: 14px;
+        }
+
+        .complex-row {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .bounded-area {
+            border: 2px dashed #3b82f6;
+            border-radius: 12px;
+            padding: 25px 20px 20px 20px;
+            position: relative;
+            background: rgba(248, 250, 252, 0.8);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .bounded-area.green {
+            border-color: #84cc16;
+            background: rgba(236, 252, 203, 0.4);
+        }
+
+        .bounded-area.blue {
+            border-color: #3b82f6;
+            background: rgba(219, 234, 254, 0.4);
+        }
+
+        .bounded-area.cyan {
+            border-color: #06b6d4;
+            background: rgba(207, 250, 254, 0.4);
+        }
+
+        .area-title {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #fff;
+            padding: 0 10px;
+            font-weight: 700;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .component-box {
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 120px;
+        }
+
+        .component-box i {
+            font-size: 24px;
+            color: #004F8F;
+        }
+
+        .component-box h5 {
+            margin: 0;
+            font-size: 12px;
+            color: #334155;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 20px;
+        }
+
+        .flow-arrow.vertical {
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Slide 1: Title_Slide -->
+    <div class="slide-container" id="slide1">
+        <div class="title-layout">
+            <h1>Presentación Ejecutiva</h1>
+            <p class="subtitle" style="font-size: 24px; color: #598CBB; font-weight: bold;">Prueba Técnica -
+                Arquitectura y Desarrollo Full-Stack</p>
+            <p class="subtitle" style="max-width: 800px; margin-top: 30px;">Refactorización del Pipeline de datos,
+                modernización arquitectónica y construcción de un Dashboard Gerencial dinámico para el Banco Singular.
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Section_Title -->
+    <div class="slide-container" id="slide2">
+        <div class="section-title-layout">
+            <hr>
+            <h2>1. Contexto y Objetivos</h2>
+            <p>Entendiendo el desafío del Banco Singular</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Image_Right_Text_Left -->
+    <div class="slide-container" id="slide3">
+        <h2 class="slide-title">El Desafío del Negocio</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <ul>
+                        <li><strong>Punto de Partida:</strong> El banco genera exportaciones estáticas en formato CSV
+                            desde su core transaccional.</li>
+                        <li><strong>El Objetivo:</strong> Construir un pipeline automatizado, con integridad
+                            referencial, para alimentar un data warehouse moderno y reportes directivos.</li>
+                        <li><strong>Requerimientos Clave:</strong>
+                            <br>- Cartera activa: Saldo consolidado interactivo por tipo de producto y región.
+                            <br>- Seguridad SSO: Integración estricta con Keycloak.
+                            <br>- Limpieza de Data: Normalización de catálogos y atributos (ej. "FISICA" a "Natural").
+                        </li>
+                        <li><strong>Visión:</strong> Transformar datos aislados en inteligencia de negocio centralizada,
+                            segura y de alta disponibilidad con visualizaciones avanzadas.</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80"
+                            alt="Corporate data analysis dashboard modern blue abstract">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Two_Column_Tiled_Text -->
+    <div class="slide-container" id="slide4">
+        <h2 class="slide-title">Enfoque Arquitectónico</h2>
+        <div class="content-area">
+            <div class="two-column tiled">
+                <div>
+                    <h3>Rechazo al Monolito</h3>
+                    <p>Implementamos soluciones programáticas y ágiles (Python + Node.js) en lugar de herramientas
+                        pesadas. Versionamos toda la lógica en Git, lo que permite detectar rápidamente errores de
+                        Integridad Referencial en el código ETL y refactorizar a demanda.</p>
+                </div>
+                <div>
+                    <h3>Contenedores y Microservicios</h3>
+                    <p>Adoptamos una arquitectura orientada a microservicios administrada bajo Dokploy. Esto garantiza
+                        que la base de datos (MySQL), el backend, el IdP (Keycloak) y el frontend corran de forma
+                        aislada, facilitando flujos de integración continua.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Tiled_Text_With_Icons -->
+    <div class="slide-container" id="slide5">
+        <h2 class="slide-title">Stack Tecnológico Elegido</h2>
+        <div class="content-area">
+            <div class="tiled-content">
+                <div class="tile">
+                    <div class="icon"><i class="fa-brands fa-python"></i></div>
+                    <h3>ETL & Datos</h3>
+                    <p>Python (Pandas + SQLAlchemy). Detectamos y solucionamos problemas de integridad insertando las
+                        llaves correctas cruzando tablas de dimensiones y hechos en memoria antes de la carga a
+                        <strong>MySQL</strong>.</p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-brands fa-node-js"></i></div>
+                    <h3>API Backend</h3>
+                    <p>Node.js con Express estructurado en capas. Elimina tokens "mock" para validar estrictamente la
+                        llave pública (JWKS) desde Keycloak, ofreciendo endpoints REST ultrarrápidos y seguros.</p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-brands fa-react"></i></div>
+                    <h3>Dashboard UI</h3>
+                    <p>Next.js (App Router) con Recharts y Tailwind CSS. Se introdujeron visualizaciones de "Barras
+                        Apiladas" y Sidebars interactivos, mejorando radicalmente la UX sobre la simple presentación de
+                        tablas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Logical Architecture Diagram -->
+    <div class="slide-container" id="slide6">
+        <h2 class="slide-title">Arquitectura Lógica: Flujo de Datos</h2>
+        <div class="content-area">
+            <div class="arch-diagram">
+                <!-- ETL Flow -->
+                <div class="arch-row">
+                    <div class="arch-group">
+                        <span class="arch-group-title">Capa de Ingesta (Batch)</span>
+                        <div class="arch-box">
+                            <i class="fa-solid fa-file-csv"></i>
+                            <h4>Archivos CSV</h4>
+                            <p>Core Transaccional</p>
+                        </div>
+                        <div class="arch-arrow">
+                            <span>Extrae/Transforma</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                        <div class="arch-box">
+                            <i class="fa-brands fa-python"></i>
+                            <h4>Python ETL</h4>
+                            <p>Pandas + SQLAlchemy</p>
+                        </div>
+                    </div>
+                    <div class="arch-arrow">
+                        <span>Carga (Star Schema)</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                    <div class="arch-box db">
+                        <i class="fa-solid fa-database"></i>
+                        <h4>MySQL Database</h4>
+                        <p>Data Warehouse Central</p>
+                    </div>
+                </div>
+
+                <!-- Application Flow -->
+                <div class="arch-row">
+                    <div class="arch-group">
+                        <span class="arch-group-title">Capa de Presentación y Lógica de Negocio (Tiempo Real)</span>
+                        <div class="arch-box">
+                            <i class="fa-solid fa-users"></i>
+                            <h4>Dirección</h4>
+                            <p>Usuarios Finales</p>
+                        </div>
+                        <div class="arch-arrow">
+                            <span>HTTPS</span>
+                            <i class="fa-solid fa-arrows-left-right"></i>
+                        </div>
+                        <div class="arch-box">
+                            <i class="fa-brands fa-react"></i>
+                            <h4>Frontend Next.js</h4>
+                            <p>Dashboard Interactivo</p>
+                        </div>
+                        <div class="arch-arrow">
+                            <span>REST API + JWT</span>
+                            <i class="fa-solid fa-arrows-left-right"></i>
+                        </div>
+                        <div class="arch-box">
+                            <i class="fa-brands fa-node-js"></i>
+                            <h4>Backend Node.js</h4>
+                            <p>Middlewares Seguros</p>
+                        </div>
+                        <div class="arch-arrow">
+                            <span>SQL Queries</span>
+                            <i class="fa-solid fa-arrows-left-right"></i>
+                        </div>
+                        <div class="arch-box db" style="opacity: 0.8; border-style: dashed;">
+                            <i class="fa-solid fa-database"></i>
+                            <h4>MySQL</h4>
+                            <p>(Consulta Optimizado)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auth Flow -->
+                <div class="arch-row">
+                    <div class="arch-group" style="border-color: #10B981; margin-left: -200px;">
+                        <span class="arch-group-title" style="color: #10B981;">Capa de Seguridad Estricta (OIDC)</span>
+                        <div class="arch-box auth">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <h4>Keycloak IdP</h4>
+                            <p>Proveedor de Identidad</p>
+                        </div>
+                        <div class="arch-arrow">
+                            <span>Emisión Token OIDC</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                        <div class="arch-box" style="border-color: #10B981;">
+                            <i class="fa-solid fa-key"></i>
+                            <h4>Validación JWKS</h4>
+                            <p>Sin Dev Secrets/Mocks</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Physical Architecture Diagram -->
+    <div class="slide-container" id="slide7">
+        <h2 class="slide-title">Arquitectura Física: Despliegue en Dokploy</h2>
+        <div class="content-area">
+            <div class="arch-diagram">
+                <div class="arch-group vertical" style="width: 1000px; padding: 40px; border-color: #004F8F;">
+                    <span class="arch-group-title" style="font-size: 20px;">Infraestructura Cloud (Servidor VPS /
+                        Instancia)</span>
+
+                    <div class="arch-row">
+                        <div class="arch-box" style="width: 100%; border-color: #f59e0b; background: #fffbeb;">
+                            <i class="fa-solid fa-network-wired" style="color: #f59e0b;"></i>
+                            <h4 style="color: #b45309;">Traefik Reverse Proxy (Dokploy Router)</h4>
+                            <p>Gestiona certificados SSL, enrutamiento de dominios y balanceo de carga</p>
+                        </div>
+                    </div>
+
+                    <div class="arch-row" style="margin-top: 20px;">
+                        <i class="fa-solid fa-arrow-down arch-arrow"></i>
+                        <i class="fa-solid fa-arrow-down arch-arrow"></i>
+                        <i class="fa-solid fa-arrow-down arch-arrow"></i>
+                    </div>
+
+                    <div class="arch-group" style="width: 100%; background: #f8fafc;">
+                        <span class="arch-group-title">Red Privada Docker (Aislamiento de Contenedores)</span>
+
+                        <div class="arch-box">
+                            <i class="fa-solid fa-window-maximize"></i>
+                            <h4>App: Frontend</h4>
+                            <p>Puerto Interno: 3000</p>
+                        </div>
+
+                        <div class="arch-box">
+                            <i class="fa-solid fa-server"></i>
+                            <h4>App: Backend API</h4>
+                            <p>Puerto Interno: 3001</p>
+                        </div>
+
+                        <div class="arch-box auth">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <h4>App: Keycloak</h4>
+                            <p>Puerto Interno: 8080</p>
+                        </div>
+
+                        <div class="arch-box db">
+                            <i class="fa-solid fa-database"></i>
+                            <h4>DB: MySQL 8</h4>
+                            <p>Puerto: 3306</p>
+                        </div>
+                    </div>
+
+                    <div class="arch-row" style="margin-top: 20px; justify-content: flex-end; padding-right: 20px;">
+                        <div class="arch-box" style="border-style: dashed; border-color: #64748b; width: 250px;">
+                            <i class="fa-solid fa-clock" style="color: #64748b;"></i>
+                            <h4 style="color: #334155;">Dokploy Scheduled Job</h4>
+                            <p>Contenedor efímero Python ETL con lógica de Integridad Referencial.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: CI/CD & Testing Architecture (Based on Example) -->
+    <div class="slide-container" id="slide8">
+                                <h2 class="slide-title">Flujo de Despliegue y Orquestación (Dokploy)</h2>
+                                <div class="content-area">
+                                    <div class="complex-arch">
+
+                                        <!-- Top Row: Repo & Dokploy Push -->
+                                        <div class="bounded-area blue"
+                                            style="width: 100%; align-items: center; flex-direction: row; justify-content: center;">
+                                            <span class="area-title">Integración y Repositorio (Git / GitHub)</span>
+                                            <div class="component-box"><i class="fa-brands fa-github"
+                                                    style="color: #333;"></i>
+                                                <h5>Código Fuente (Monorepo/Multirepo)</h5>
+                                            </div>
+                                            <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                            <div class="component-box"><i class="fa-solid fa-code-commit"></i>
+                                                <h5>Commits / Push</h5>
+                                            </div>
+                                            <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                            <div class="component-box"><i class="fa-solid fa-webhook"
+                                                    style="color: #10B981;"></i>
+                                                <h5>Dokploy Webhook (Trigger)</h5>
+                                            </div>
+                                        </div>
+
+                                        <div class="flow-arrow vertical"><i class="fa-solid fa-arrows-up-down"></i>
+                                        </div>
+
+                                        <!-- Middle Row: Execution -->
+                                        <div class="complex-row">
+
+                                            <!-- Left: Dokploy Apps -->
+                                            <div class="bounded-area green" style="flex: 1;">
+                                                <span class="area-title">Plataforma como Servicio (PaaS: Dokploy)</span>
+                                                <div style="display: flex; gap: 10px; justify-content: center;">
+                                                    <div class="bounded-area"
+                                                        style="padding: 15px; display: flex; flex-direction: column; gap: 10px; flex-wrap: wrap; justify-content: center; border-color: #94a3b8;">
+                                                        <span class="area-title"
+                                                            style="top: -10px; font-size: 10px; border-color:#94a3b8;">Aplicaciones
+                                                            y Servicios</span>
+                                                        <div style="display: flex; gap: 10px;">
+                                                            <div class="component-box"><i
+                                                                    class="fa-brands fa-react"></i>
+                                                                <h5>Frontend (Next.js)</h5>
+                                                            </div>
+                                                            <div class="component-box"><i
+                                                                    class="fa-brands fa-node-js"></i>
+                                                                <h5>Backend (Express)</h5>
+                                                            </div>
+                                                        </div>
+                                                        <div style="display: flex; gap: 10px;">
+                                                            <div class="component-box"><i
+                                                                    class="fa-solid fa-shield-halved"
+                                                                    style="color:#f59e0b;"></i>
+                                                                <h5>Keycloak (IdP)</h5>
+                                                            </div>
+                                                            <div class="component-box"><i class="fa-solid fa-database"
+                                                                    style="color:#004F8F;"></i>
+                                                                <h5>MySQL 8</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flow-arrow"><i
+                                                    class="fa-solid fa-arrow-right-arrow-left"></i><br><span
+                                                    style="font-size:10px;">Red Privada</span></div>
+
+                                            <!-- Right: ETL Job -->
+                                            <div class="bounded-area blue" style="flex: 1;">
+                                                <span class="area-title">Pipeline de Datos (Dokploy Scheduled
+                                                    Job)</span>
+                                                <div
+                                                    style="display: flex; gap: 20px; align-items: center; justify-content: center; height: 100%;">
+                                                    <div class="component-box"><i class="fa-solid fa-file-csv"
+                                                            style="color:#10b981;"></i>
+                                                        <h5>Archivos CSV</h5>
+                                                    </div>
+                                                    <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i>
+                                                    </div>
+                                                    <div class="component-box"><i class="fa-brands fa-python"
+                                                            style="color:#3b82f6;"></i>
+                                                        <h5>Script ETL<br>(Integridad Ref.)</h5>
+                                                    </div>
+                                                    <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i>
+                                                    </div>
+                                                    <div class="component-box"><i class="fa-solid fa-server"
+                                                            style="color:#64748b;"></i>
+                                                        <h5>Insert MySQL</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <!-- Bottom Row: Proxy and User -->
+                                        <div class="complex-row" style="margin-top: 10px;">
+                                            <div class="bounded-area cyan"
+                                                style="flex: 1; align-items: center; flex-direction: row; justify-content: center;">
+                                                <span class="area-title">Enrutamiento y Seguridad</span>
+                                                <div class="component-box"><i class="fa-solid fa-network-wired"
+                                                        style="color:#f59e0b;"></i>
+                                                    <h5>Traefik Proxy (SSL / Dominios)</h5>
+                                                </div>
+                                                <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                                <div class="component-box"><i class="fa-solid fa-key"
+                                                        style="color:#ef4444;"></i>
+                                                    <h5>JWKS Auth (RS256)</h5>
+                                                </div>
+                                            </div>
+
+                                            <div class="bounded-area"
+                                                style="flex: 0.5; align-items: center; justify-content: center;">
+                                                <span class="area-title">Usuario Final</span>
+                                                <div class="component-box"><i class="fa-solid fa-users"
+                                                        style="color:#334155;"></i>
+                                                    <h5>Directorio / Analistas</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 9: Section_Title -->
+                            <div class="slide-container" id="slide9">
+                                <div class="section-title-layout">
+                                    <hr>
+                                    <h2>2. Trabajo Reciente y Resolución de Problemas</h2>
+                                    <p>Estrategia de ejecución técnica aplicada</p>
+                                </div>
+                            </div>
+
+                            <!-- Slide 10: Timeline -->
+                            <div class="slide-container" id="slide10">
+                                <h2 class="slide-title">Fases de Despliegue (Flujo Dokploy)</h2>
+                                <div class="content-area">
+                                    <div class="timeline-layout">
+                                        <div class="timeline-line"></div>
+                                        <div class="timeline-item">
+                                            <div class="content-wrapper">
+                                                <h3>Fase 1: Infra</h3>
+                                                <p>Despliegue de MySQL y Keycloak en contenedores aislados mediante
+                                                    Dokploy.</p>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="content-wrapper">
+                                                <h3>Fase 2: ETL</h3>
+                                                <p>Procesamiento automatizado de los archivos CSV utilizando Python y
+                                                    Pandas.</p>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="content-wrapper">
+                                                <h3>Fase 3: Backend</h3>
+                                                <p>Desarrollo de API Node.js con protección OIDC y mapeo de consultas
+                                                    SQL.</p>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="content-wrapper">
+                                                <h3>Fase 4: Front</h3>
+                                                <p>Construcción del dashboard directivo interactivo usando Next.js y
+                                                    Recharts.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 11: Highlighted_Numbers -->
+                            <div class="slide-container" id="slide11">
+                                <h2 class="slide-title">Eficiencia del Pipeline de Datos</h2>
+                                <div class="content-area">
+                                    <div class="two-column highlight-numbers-layout">
+                                        <div>
+                                            <div class="number">100%</div>
+                                            <div class="number-label">Automatizado e Íntegro</div>
+                                        </div>
+                                        <div>
+                                            <h3>Del Archivo Plano al Relacional</h3>
+                                            <p>El script en Python se ajustó para asegurar la <strong>Integridad
+                                                    Referencial</strong>. Al insertar datos en
+                                                <code>fact_transacciones</code>, el ETL ahora cruza en memoria las
+                                                cuentas para inyectar dinámicamente las llaves primarias correctas (ej.
+                                                <code>cliente_id</code>), evitando errores de base de datos críticos
+                                                (Error 1364) y garantizando que el modelo estrella esté siempre
+                                                consistente.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 12: Image_Right_Text_Left -->
+                            <div class="slide-container" id="slide12">
+                                <h2 class="slide-title">Seguridad Cero Mocks (Zero Trust)</h2>
+                                <div class="content-area">
+                                    <div class="two-column">
+                                        <div>
+                                            <ul class="bullet-list">
+                                                <li><i class="fa-solid fa-shield-halved"></i> <strong>Proveedor de
+                                                        Identidad:</strong> Autenticación completamente centralizada en
+                                                    <strong>Keycloak</strong> usando OIDC.</li>
+                                                <li><i class="fa-solid fa-ban"></i> <strong>Eliminación de
+                                                        Mocks:</strong> Se purgó del Backend todo código de simulación
+                                                    (bypass) o claves secretas de desarrollo locales.</li>
+                                                <li><i class="fa-solid fa-check-double"></i> <strong>Validación
+                                                        Estricta:</strong> Node.js ahora valida tokens comprobando
+                                                    estrictamente el emisor y el destinatario contra el JWKS (JSON Web
+                                                    Key Set) de Keycloak en producción.</li>
+                                                <li><i class="fa-solid fa-lock"></i> <strong>Prevención de
+                                                        Fugas:</strong> Sin riesgo de accesos accidentales o tokens
+                                                    caducados siendo procesados.</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <div class="image-wrapper">
+                                                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80"
+                                                    alt="digital cybersecurity padlock blue abstract identity">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 13: Section_Title -->
+                            <div class="slide-container" id="slide13">
+                                <div class="section-title-layout">
+                                    <hr>
+                                    <h2>3. Resultados y Entregables</h2>
+                                    <p>Dashboard Interactivo y Analítica Avanzada</p>
+                                </div>
+                            </div>
+
+                            <!-- Slide 14: Styled_Bullet_Points -->
+                            <div class="slide-container" id="slide14">
+                                <h2 class="slide-title">Informe de Mejoras en la UI/UX</h2>
+                                <div class="content-area">
+                                    <div class="bullet-list">
+                                        <ul>
+                                            <li><i class="fa-solid fa-chart-column"></i> <strong>Gráficos Avanzados
+                                                    (Barras Apiladas):</strong> Se reemplazó la tabla plana de Cartera
+                                                Activa por un componente interactivo de Recharts que segmenta el saldo
+                                                consolidado por región y lo divide por tipo de producto financiero.</li>
+                                            <li><i class="fa-solid fa-filter"></i> <strong>Layout de Filtros:</strong>
+                                                Se reestructuró la página principal para incluir una barra lateral
+                                                (Sidebar) dedicada a los filtros de segmentación comercial y
+                                                localización geográfica.</li>
+                                            <li><i class="fa-solid fa-spell-check"></i> <strong>Limpieza de Catálogos
+                                                    Front-End:</strong> El dashboard ahora mapea inteligentemente la
+                                                data cruda del ETL. Por ejemplo, los clientes reportados como "FISICA" o
+                                                "MORAL" se consolidan correctamente bajo los KPIs visuales de "Personas
+                                                Naturales" y "Jurídicas", corrigiendo errores de métricas en 0.</li>
+                                            <li><i class="fa-solid fa-bug-slash"></i> <strong>Resolución de
+                                                    Tipado:</strong> Se aplicó "type safety" (TypeScript) a las
+                                                propiedades avanzadas de gráficos, previniendo fallos en compilación o
+                                                renderizado durante los pasos a producción.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 15: Q&A -->
+                            <div class="slide-container" id="slide15">
+                                <div class="qa-layout">
+                                    <h2 style="font-size: 60px;">Fin de la Presentación</h2>
+                                    <p style="font-size: 32px; color:#598CBB;">¿Preguntas o comentarios?</p>
+                                    <div class="contact-info">
+                                        Arquitectura de Datos y Desarrollo Full-Stack | Banco Singular
+                                    </div>
+                                </div>
+                            </div>
+
+</body>
+
+</html>
