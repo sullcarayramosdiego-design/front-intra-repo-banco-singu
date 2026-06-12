@@ -63,6 +63,14 @@ export async function fetcher<T>(endpoint: string, options: RequestInit = {}): P
         errorMessage = errorBody || errorMessage;
       }
       console.error(`[Fetcher Error] Status: ${response.status}, Message: ${errorMessage}`);
+
+      // Si la sesión expiró (401) y estamos en el navegador, desconectar y mandar a login
+      if (response.status === 401 && typeof window !== "undefined") {
+        console.warn("[Fetcher] Sesión no autorizada o expirada (401). Forzando logout...");
+        const { signOut } = await import("next-auth/react");
+        signOut({ callbackUrl: "/login?error=SessionExpired" });
+      }
+
       throw new Error(errorMessage);
     }
 

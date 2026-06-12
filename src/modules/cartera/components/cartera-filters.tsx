@@ -3,7 +3,7 @@
 
 import { Filter, MapPin, Briefcase, RefreshCcw, Landmark } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 
 const REGIONS = ["Centro", "Lima Metropolitana", "Norte", "Oriente", "Sur"];
 const SEGMENTS = ["EMPRESARIAL", "PREMIER", "PYME", "RETAIL"];
@@ -23,6 +23,7 @@ const PRODUCTS = [
 export function CarteraFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const [region, setRegion] = useState("");
   const [segmento, setSegmento] = useState("");
@@ -50,11 +51,15 @@ export function CarteraFilters() {
     const search = current.toString();
     const query = search ? `?${search}` : "";
 
-    router.push(`/cartera${query}`);
+    startTransition(() => {
+      router.push(`/cartera${query}`);
+    });
   };
 
   const clearFilters = () => {
-    router.push(`/cartera`);
+    startTransition(() => {
+      router.push(`/cartera`);
+    });
   };
 
   return (
@@ -167,6 +172,19 @@ export function CarteraFilters() {
         )}
       </div>
 
+      {isPending && (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/30 backdrop-blur-[1.5px]">
+          <div className="flex flex-col items-center gap-3 bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-2xl">
+            <div className="relative w-10 h-10 flex items-center justify-center">
+              <div className="absolute inset-0 border-3 border-t-violet-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" style={{ animationDuration: '0.8s' }} />
+              <div className="absolute inset-1 border-3 border-t-transparent border-r-emerald-500 border-b-transparent border-l-transparent rounded-full animate-spin" style={{ animationDuration: '0.6s', animationDirection: 'reverse' }} />
+            </div>
+            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+              Actualizando cartera...
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

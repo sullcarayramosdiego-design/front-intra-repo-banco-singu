@@ -8,6 +8,8 @@ import { Button } from "@/shared/ui/button";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { LoadingScreen } from "@/shared/ui/loading-screen";
 
+import { useEffect } from "react";
+
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -16,6 +18,15 @@ export default function LoginPage() {
   const [error, setError]       = useState("");
   const [loading, setLoading]   = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("error") === "SessionExpired") {
+        setError("Tu sesión ha expirado por inactividad. Por favor, inicia sesión de nuevo.");
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
