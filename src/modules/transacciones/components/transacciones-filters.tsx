@@ -3,6 +3,7 @@
 import { Filter, Calendar, MonitorSmartphone, RefreshCcw, MapPin, Tag } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useTransition } from "react";
+import { createPortal } from "react-dom";
 
 interface TransaccionesFiltersProps {
   periods?: string[];
@@ -25,9 +26,11 @@ export function TransaccionesFilters({
   const [canal, setCanal] = useState("");
   const [sucursal, setSucursal] = useState("");
   const [tipo, setTipo] = useState("");
+  const [mounted, setMounted] = useState(false);
 
-  // Sincronizar estado local con la URL
+  // Sincronizar estado local con la URL y montar componente en cliente
   useEffect(() => {
+    setMounted(true);
     setPeriodo(searchParams.get("periodo") || "");
     setCanal(searchParams.get("canal") || "");
     setSucursal(searchParams.get("sucursal") || "");
@@ -182,7 +185,7 @@ export function TransaccionesFilters({
         )}
       </div>
 
-      {isPending && (
+      {mounted && isPending && createPortal(
         <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/30 backdrop-blur-[1.5px]">
           <div className="flex flex-col items-center gap-3 bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-2xl">
             <div className="relative w-10 h-10 flex items-center justify-center">
@@ -193,7 +196,8 @@ export function TransaccionesFilters({
               Actualizando transacciones...
             </span>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
